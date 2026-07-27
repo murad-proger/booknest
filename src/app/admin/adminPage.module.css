@@ -1,0 +1,19 @@
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 30px;
+}
+
+.link {
+  background-color: rgb(168, 115, 0);
+  color: white;
+  border-radius: 7px;
+  box-shadow: 0 0 10px 0 rgb(168, 115, 0);
+  padding: 5px 10px;
+  transition: color 0.2s linear, box-shadow 0.2s linear;
+}
+
+.link:hover {
+  color: black;
+  box-shadow: 2px 2px 10px 0 rgb(168, 115, 0);
+} 
