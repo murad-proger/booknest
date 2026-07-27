@@ -1,6 +1,6 @@
 import { prisma } from "./prisma";
 
-type BookData = {
+export type BookData = {
   title: string,
   author: string,
   price: number,
@@ -16,7 +16,7 @@ type GetBooksOptions = {
   sort?: string;
 }
 
-export async function getBooks(options: GetBooksOptions) {
+export async function getBooks(options: GetBooksOptions  = {}) {
   const {sort, search} = options
 
   let orderBy;
@@ -68,6 +68,14 @@ export async function createBook(data: CreateBookData) {
 export async function updateBook(id: number, data: UpdateBookData) {
   return await prisma.book.update({
     data,
+    where: {
+      id
+    }
+  })
+}
+
+export async function getBookById(id: number) {
+  return await prisma.book.findUnique({
     where: {
       id
     }
