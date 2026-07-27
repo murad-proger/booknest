@@ -1,6 +1,6 @@
 "use server"
 
-import { prisma } from "@/lib/prisma"
+import { createBook } from "@/lib/books";
 
 interface Errors {
   title?: string;
@@ -44,13 +44,11 @@ export async function createBookAction(
   }
 
   try {
-    await prisma.book.create({
-      data: {
-        title,
-        author,
-        price,
-        img,
-      }
+    await createBook({
+      title,
+      author,
+      price,
+      img
     })
   } catch (e) {
     return {

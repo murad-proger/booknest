@@ -1,22 +1,16 @@
 import styles from "./booksPage.module.css"
 
-import { prisma } from "@/lib/prisma"
-import CreateBookForm from "@/сomponents/CreateBookForm/CreateBookForm"
+import { getBooks } from "@/lib/books" 
 
 export default async function BooksPage () {
-  const books = await prisma.book.findMany()
+  const options = {}
+  const books = await getBooks(options)
 
   return (
     <>
       <h1>
         BoksPage
       </h1>
-      <section>
-        <h2>
-          Create book:
-        </h2>
-        <CreateBookForm />
-      </section>
       <section>
         <h2>
           All books:
