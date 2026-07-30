@@ -21,8 +21,10 @@ export default function DeleteBookButton(props: DeleteBookButtonProps) {
     }catch(e) {
       console.error(e);
       throw new Error('Book is not deleted')
-    }    
+    }
   }
+
+
 
   return (
     <button className={styles.deleteButton} onClick={handleDelete}>

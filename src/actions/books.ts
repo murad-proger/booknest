@@ -1,62 +1,79 @@
 "use server"
 
 import { createBook, updateBook } from "@/lib/books";
+import { bookSchema, updateBookSchema } from "@/lib/validation";
+import { z } from "zod";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 
-interface Errors {
+interface BookFormErrors {
   title?: string;
   author?: string;
   price?: string;
+  img?: string;
+  form?: string;
 }
 
-type CreateBookActionResult = {
+export type CreateBookActionResult = {
   success: boolean;
-  errors?: Errors;
+  errors?: BookFormErrors;
 }
 
 export async function createBookAction(
-  prevState: CreateBookActionResult,
-  formdata: FormData
+  _prevState: CreateBookActionResult,
+  formData: FormData
 ): Promise<CreateBookActionResult> {
-  const title = String(formdata.get('title') ?? "").trim()
-  const author = String(formdata.get('author') ?? "").trim()
-  const price = Number(formdata.get('price'))
-  const img = String(formdata.get('img') ?? "").trim()
+  const result = bookSchema.safeParse({
+    title: formData.get('title'),
+    author: formData.get('author'),
+    price: formData.get('price'),
+    img: formData.get('img'),
+  })
 
-  const errors: Errors = {}
+  if(!result.success) {
+    const fieldErrors = z.flattenError(result.error).fieldErrors
+        
+    const title = fieldErrors.title?.join('. ')
+    const author = fieldErrors.author?.join('. ')
+    const price = fieldErrors.price?.join('. ')
+    const img = fieldErrors.img?.join('. ')
 
-  if(!title) {
-    errors.title = "title is required"
-  }
-
-  if(!author) {
-    errors.author = "author is required"
-  }
-
-  if(Number.isNaN(price) || price < 1) {
-    errors.price = "price is required and must be 1$ or more"
-  }
-
-  if(Object.keys(errors).length > 0) {
     return {
       success: false,
-      errors
+      errors: {
+        title,
+        author,
+        price,
+        img
+      }
+    }
+  }
+
+  const existingBook = await prisma.book.findFirst({
+    where: {
+      title: result.data.title,
+      author: result.data.author,
+    }
+  })
+
+  if(existingBook) {
+    return {
+      success: false,
+      errors: {
+        form: 'This book already exists'
+      }
     }
   }
 
   try {
-    await createBook({
-      title,
-      author,
-      price,
-      img
-    })
-  } catch (e) {
+    await createBook(result.data)
+  } catch (_error) {
     return {
       success: false,
       errors: {
-        title: 'Failed to create book'
+        form: 'Failed to create book'
       }
     }
   }
@@ -66,59 +83,60 @@ export async function createBookAction(
 }
 
 export async function updateBookAction(
-  prevState: CreateBookActionResult,
-  formdata: FormData
+  _prevState: CreateBookActionResult,
+  formData: FormData
 ): Promise<CreateBookActionResult> {
-  const title = String(formdata.get('title') ?? "").trim()
-  const author = String(formdata.get('author') ?? "").trim()
-  const price = Number(formdata.get('price'))
-  const img = String(formdata.get('img') ?? "").trim()
-  const id = Number(formdata.get('id'))
+  const result = updateBookSchema.safeParse({
+    id: formData.get('id'),
+    title: formData.get('title'),
+    author: formData.get('author'),
+    price: formData.get('price'),
+    img: formData.get('img')
+  })
 
-  const errors: Errors = {}
+  if (!result.success) {
+    const fieldErrors = z.flattenError(result.error).fieldErrors
 
-  if(!title) {
-    errors.title = "title is required"
-  }
+    const title = fieldErrors.title?.join('. ')
+    const author = fieldErrors.author?.join('. ')
+    const price = fieldErrors.price?.join('. ')
+    const img = fieldErrors.img?.join('. ')
 
-  if(!author) {
-    errors.author = "author is required"
-  }
-
-  if(Number.isNaN(price) || price < 1) {
-    errors.price = "price is required and must be 1$ or more"
-  }
-
-  if (Number.isNaN(id)) {
     return {
       success: false,
       errors: {
-        title: "Invalid book id",
-      },
-    };
-  }
-
-  if(Object.keys(errors).length > 0) {
-    return {
-      success: false,
-      errors
+        title,
+        author,
+        price,
+        img
+      }
     }
   }
 
-  const data = {
-    title,
-    author,
-    price,
-    img
+  const {id, ...data} = result.data
+
+  const existingBook = await prisma.book.findUnique({
+    where: {
+      id
+    }
+  })
+
+  if(!existingBook) {
+    return {
+      success: false,
+      errors: {
+        form: 'Book not found'
+      }
+    }
   }
 
   try {
     await updateBook(id, data)
-  } catch (e) {
+  } catch (_error) {
     return {
       success: false,
       errors: {
-        title: 'Failed to update book'
+        form: 'Failed to update book'
       }
     }
   }

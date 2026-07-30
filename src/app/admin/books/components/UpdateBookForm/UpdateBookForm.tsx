@@ -3,7 +3,7 @@
 import styles from "./updateBookForm.module.css"
 
 import { useActionState } from "react"
-import  { updateBookAction } from "@/actions/books"
+import  { type CreateBookActionResult, updateBookAction } from "@/actions/books"
 
 type Props = {
   book: {
@@ -15,7 +15,7 @@ type Props = {
   }
 }
 
-const initialState = {
+const initialState: CreateBookActionResult = {
   success: false,
   errors: {}
 }
@@ -30,31 +30,36 @@ export default function UpdateBookForm ({book}: Props) {
       action={formAction}
       className={styles.updateBook}
     >
+      {
+        state.errors?.form && (
+          <p>{state.errors.form}</p>
+        )
+      }
       <label>
         <span>title:</span>
         <input type="text" name="title" defaultValue={title} />
         {
-          state.errors?.title
-           ? <p>{state.errors.title}</p>
-           : ''
+          state.errors?.title && (
+            <p>{state.errors.title}</p>
+          )
         }
       </label>
       <label>
         <span>author:</span>
         <input type="text" name="author" defaultValue={author} />
         {
-          state.errors?.author
-           ? <p>{state.errors.author}</p>
-           : ''
+          state.errors?.author && (
+            <p>{state.errors.author}</p>
+          )
         }
       </label>
       <label>
         <span>price:</span>
         <input type="text" name="price" defaultValue={price} placeholder="minimum 1$"/>
         {
-          state.errors?.price
-           ? <p>{state.errors.price}</p>
-           : ''
+          state.errors?.price && (
+            <p>{state.errors.price}</p>
+          )
         }
       </label>
       <label>
