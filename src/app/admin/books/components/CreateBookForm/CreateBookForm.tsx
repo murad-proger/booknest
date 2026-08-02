@@ -2,9 +2,9 @@
 import styles from "./CreateBookForm.module.css"
 
 import { useActionState } from "react"
-import { createBookAction, type CreateBookActionResult } from "@/actions/books"
+import { createBookAction, type FormActionResult } from "@/actions/books"
 
-const initialState: CreateBookActionResult = {
+const initialState: FormActionResult = {
   success: false,
   errors: {}
 }

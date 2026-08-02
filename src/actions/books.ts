@@ -1,6 +1,6 @@
 "use server"
 
-import { createBook, updateBook } from "@/services/books";
+import { createBook, updateBook, deleteBook } from "@/services/books";
 import { bookSchema, updateBookSchema } from "@/lib/validation";
 import { z } from "zod";
 
@@ -16,15 +16,20 @@ interface BookFormErrors {
   form?: string;
 }
 
-export type CreateBookActionResult = {
+type ActionResult = {
+  success: boolean;
+  error?: string;
+};
+
+export type FormActionResult = {
   success: boolean;
   errors?: BookFormErrors;
 }
 
 export async function createBookAction(
-  _prevState: CreateBookActionResult,
+  _prevState: FormActionResult,
   formData: FormData
-): Promise<CreateBookActionResult> {
+): Promise<FormActionResult> {
   const result = bookSchema.safeParse({
     title: formData.get('title'),
     author: formData.get('author'),
@@ -83,9 +88,9 @@ export async function createBookAction(
 }
 
 export async function updateBookAction(
-  _prevState: CreateBookActionResult,
+  _prevState: FormActionResult,
   formData: FormData
-): Promise<CreateBookActionResult> {
+): Promise<FormActionResult> {
   const result = updateBookSchema.safeParse({
     id: formData.get('id'),
     title: formData.get('title'),
@@ -143,4 +148,23 @@ export async function updateBookAction(
 
   revalidatePath("/admin/books");
   redirect("/admin/books");
+}
+
+export async function deleteBookAction(
+  id: number
+): Promise<ActionResult> {
+  try {
+    await deleteBook(id);
+
+    revalidatePath("/admin/books");
+
+    return {
+      success: true,
+    };
+  } catch {
+    return {
+      success: false,
+      error: "Failed to delete book"
+    };
+  }
 }

@@ -3,7 +3,7 @@
 import styles from "./updateBookForm.module.css"
 
 import { useActionState } from "react"
-import  { type CreateBookActionResult, updateBookAction } from "@/actions/books"
+import  { type FormActionResult, updateBookAction } from "@/actions/books"
 
 type Props = {
   book: {
@@ -15,7 +15,7 @@ type Props = {
   }
 }
 
-const initialState: CreateBookActionResult = {
+const initialState: FormActionResult = {
   success: false,
   errors: {}
 }
