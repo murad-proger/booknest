@@ -1,4 +1,4 @@
-import { getBooks } from "@/lib/books";
+import { getBooks } from "@/services/books";
 import styles from "./adminBooksPage.module.css";
 
 import Link from "next/link";

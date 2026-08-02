@@ -1,6 +1,6 @@
 "use server"
 
-import { createBook, updateBook } from "@/lib/books";
+import { createBook, updateBook } from "@/services/books";
 import { bookSchema, updateBookSchema } from "@/lib/validation";
 import { z } from "zod";
 

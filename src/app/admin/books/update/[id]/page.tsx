@@ -1,4 +1,4 @@
-import { getBookById } from "@/lib/books";
+import { getBookById } from "@/services/books";
 import UpdateBookForm from "../../components/UpdateBookForm/UpdateBookForm"
 
 type Props = {

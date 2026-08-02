@@ -1,4 +1,4 @@
-import { createBook, getBooks } from "@/lib/books";
+import { createBook, getBooks } from "@/services/books";
 
 export async function GET() {
   try {
