@@ -1,6 +1,6 @@
 import styles from "./booksPage.module.css"
 
-import { getBooks } from "@/lib/books" 
+import { getBooks } from "@/services/books" 
 
 export default async function BooksPage () {
   const options = {}

@@ -1,7 +1,7 @@
 "use server"
 
 import { createBook, updateBook, deleteBook } from "@/services/books";
-import { bookSchema, updateBookSchema } from "@/lib/validation";
+import { bookSchema, updateBookSchema, type BookFormData, type UpdateBookFormData } from "@/lib/validation";
 import { z } from "zod";
 
 import { revalidatePath } from "next/cache";
@@ -21,38 +21,33 @@ type ActionResult = {
   error?: string;
 };
 
-export type FormActionResult = {
+type FormActionResult = {
   success: boolean;
   errors?: BookFormErrors;
 }
 
+function getFieldErrors(
+  error: z.ZodError<BookFormData | UpdateBookFormData>
+): BookFormErrors {
+  const fieldErrors = z.flattenError(error).fieldErrors;
+
+  return {
+    title: fieldErrors.title?.join(". "),
+    author: fieldErrors.author?.join(". "),
+    price: fieldErrors.price?.join(". "),
+    img: fieldErrors.img?.join(". "),
+  };
+}
+
 export async function createBookAction(
-  _prevState: FormActionResult,
-  formData: FormData
+  data: BookFormData
 ): Promise<FormActionResult> {
-  const result = bookSchema.safeParse({
-    title: formData.get('title'),
-    author: formData.get('author'),
-    price: formData.get('price'),
-    img: formData.get('img'),
-  })
+  const result = bookSchema.safeParse(data)
 
   if(!result.success) {
-    const fieldErrors = z.flattenError(result.error).fieldErrors
-        
-    const title = fieldErrors.title?.join('. ')
-    const author = fieldErrors.author?.join('. ')
-    const price = fieldErrors.price?.join('. ')
-    const img = fieldErrors.img?.join('. ')
-
     return {
       success: false,
-      errors: {
-        title,
-        author,
-        price,
-        img
-      }
+      errors: getFieldErrors(result.error)
     }
   }
 
@@ -74,7 +69,7 @@ export async function createBookAction(
 
   try {
     await createBook(result.data)
-  } catch (_error) {
+  } catch {
     return {
       success: false,
       errors: {
@@ -88,33 +83,14 @@ export async function createBookAction(
 }
 
 export async function updateBookAction(
-  _prevState: FormActionResult,
-  formData: FormData
+  formdata: UpdateBookFormData
 ): Promise<FormActionResult> {
-  const result = updateBookSchema.safeParse({
-    id: formData.get('id'),
-    title: formData.get('title'),
-    author: formData.get('author'),
-    price: formData.get('price'),
-    img: formData.get('img')
-  })
+  const result = updateBookSchema.safeParse(formdata)
 
-  if (!result.success) {
-    const fieldErrors = z.flattenError(result.error).fieldErrors
-
-    const title = fieldErrors.title?.join('. ')
-    const author = fieldErrors.author?.join('. ')
-    const price = fieldErrors.price?.join('. ')
-    const img = fieldErrors.img?.join('. ')
-
+  if(!result.success) {
     return {
       success: false,
-      errors: {
-        title,
-        author,
-        price,
-        img
-      }
+      errors: getFieldErrors(result.error)
     }
   }
 
@@ -137,7 +113,7 @@ export async function updateBookAction(
 
   try {
     await updateBook(id, data)
-  } catch (_error) {
+  } catch {
     return {
       success: false,
       errors: {

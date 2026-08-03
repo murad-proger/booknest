@@ -1,66 +1,103 @@
 "use client"
 import styles from "./CreateBookForm.module.css"
 
-import { useActionState } from "react"
-import { createBookAction, type FormActionResult } from "@/actions/books"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import z from "zod"
+import { createBookAction } from "@/actions/books"
+import { bookSchema, type BookFormData } from "@/lib/validation"
 
-const initialState: FormActionResult = {
-  success: false,
-  errors: {}
-}
+type Book = z.input<typeof bookSchema>
 
 export default function CreateBookForm () {
 
-  const [state, formAction] = useActionState(createBookAction, initialState)
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: {errors, isSubmitting}
+  } = useForm<
+    Book,
+    unknown,
+    BookFormData
+  >({
+    resolver: zodResolver(bookSchema)
+  })
+
+  const onSubmit = async (data: BookFormData) => {
+    const result = await createBookAction(data)
+
+    if(!result.success && result.errors) {
+      for (const [field, message] of Object.entries(result.errors)) {
+        if(!message) continue
+        
+        if (field === "form") {
+          setError("root.serverError", {
+            type: "server",
+            message,
+          });
+          continue;
+        }
+
+        setError(
+          field as keyof Book,
+          {
+            type: "server",
+            message
+          }
+        )
+      }
+    }
+  }
 
   return (
     <form
-      action={formAction}
+      onSubmit={handleSubmit(onSubmit)}
       className={styles.createBook}
     >
       {
-        state.errors?.form && (
-          <p><b>{state.errors.form}</b></p>
+        errors?.root?.serverError && (
+          <p className="fieldError"><b>{errors.root.serverError.message}</b></p>
         )
       }
       <label>
         <span>title:</span>
-        <input type="text" name="title"/>
+        <input type="text" {...register("title")}/>
         {
-          state.errors?.title && (
-            <p>{state.errors.title}</p>
+          errors?.title && (
+            <p className="fieldError">{errors.title.message}</p>
           )
         }
       </label>
       <label>
         <span>author:</span>
-        <input type="text" name="author"/>
+        <input type="text" {...register("author")}/>
         {
-          state.errors?.author && (
-            <p>{state.errors.author}</p>
+          errors?.author && (
+            <p className="fieldError">{errors.author.message}</p>
           )
         }
       </label>
       <label>
         <span>price:</span>
-        <input type="text" name="price" placeholder="minimum 1$"/>
+        <input type="text" {...register("price")} placeholder="minimum 1$"/>
         {
-          state.errors?.price && (
-            <p>{state.errors.price}</p>
+          errors?.price && (
+            <p className="fieldError">{errors.price.message}</p>
           )
         }
       </label>
       <label>
         <span>img:</span>
-        <input type="text" name="img"/>
+        <input type="text" {...register("img")}/>
         {
-          state.errors?.img && (
-            <p>{state.errors.img}</p>
+          errors?.img && (
+            <p className="fieldError">{errors.img.message}</p>
           )
         }
       </label>
-      <button type="submit">
-        Create
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Creating...' : 'Create'}
       </button>
     </form>
   )

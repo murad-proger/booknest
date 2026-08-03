@@ -55,6 +55,11 @@ section {
   margin-bottom: 30px;
 }
 
+.fieldError {
+  font-size: 12px;
+  color: rgb(160, 2, 2);
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

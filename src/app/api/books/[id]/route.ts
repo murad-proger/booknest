@@ -1,4 +1,4 @@
-import { deleteBook, getBookById, updateBook } from "@/lib/books"
+import { deleteBook, getBookById, updateBook } from "@/services/books"
 
 export async function DELETE(
   request: Request,

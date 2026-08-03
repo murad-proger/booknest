@@ -14,4 +14,5 @@ export const updateBookSchema = bookSchema.extend({
   id: z.coerce.number().int().positive()
 })
 
-// export type BookFormData = z.infer<typeof bookSchema>
+export type BookFormData = z.infer<typeof bookSchema>
+export type UpdateBookFormData = z.infer<typeof updateBookSchema>
