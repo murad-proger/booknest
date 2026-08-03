@@ -1,16 +1,29 @@
+import SearchInput from "@/сomponents/SearchInput/SearchInput" 
 import styles from "./booksPage.module.css"
 
 import { getBooks } from "@/services/books" 
 
-export default async function BooksPage () {
-  const options = {}
-  const books = await getBooks(options)
+export default async function BooksPage ({
+  searchParams
+}: {
+  searchParams: Promise<{
+    search?: string;
+    sort?: string;
+  }>
+}) {
+  const {search, sort} = await searchParams
+
+  const books = await getBooks({
+    search,
+    sort
+  })
 
   return (
     <>
       <h1>
         BoksPage
       </h1>
+      <SearchInput />
       <section>
         <h2>
           All books:
