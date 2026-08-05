@@ -1,0 +1,27 @@
+.filterPrice input {
+  width: 70px;
+  color: var(--background);
+  background-color: var(--foreground);
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  padding: 5px 10px;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.filterPrice input::-webkit-outer-spin-button,
+.filterPrice input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.filterPrice input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}

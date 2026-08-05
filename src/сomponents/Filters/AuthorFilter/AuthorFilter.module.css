@@ -1,0 +1,30 @@
+.filterAuthors {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  max-height: 200px;
+  border: none;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.filterAuthors legend {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.authorItem {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+  cursor: pointer;
+}
+
+.authorItem input {
+  cursor: pointer;
+}
+
+.authorItem span {
+  margin: 0;
+}

@@ -1,0 +1,8 @@
+.filtersSelect {
+  display: flex;
+  flex-direction: column;
+}
+
+.filtersSelect select {
+  padding: 5px 10px;
+}

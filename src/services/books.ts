@@ -1,3 +1,4 @@
+import type { Prisma } from "@/generated/prisma/client"
 import { prisma } from "@/lib/prisma"
 
 export type BookData = {
@@ -11,13 +12,38 @@ type CreateBookData = BookData
 
 type UpdateBookData = Partial<BookData>
 
-type GetBooksOptions = {
+export type GetBooksOptions = {
   search?: string;
   sort?: string;
+  authors?: string | string[];
+  priceMin?: number;
+  priceMax?: number;
+}
+
+export async function getAuthors() {
+  const authors = await prisma.book.findMany({
+    distinct: ["author"],
+    select: {
+      author: true,
+    },
+    orderBy: {
+      author: "asc",
+    },
+  });
+
+  return authors.map(({ author }) => author);
 }
 
 export async function getBooks(options: GetBooksOptions  = {}) {
-  const {sort, search} = options
+  const where: Prisma.BookWhereInput = {};
+  
+  const {
+    sort,
+    search,
+    priceMin,
+    priceMax,
+    authors,
+  } = options
 
   let orderBy;
 
@@ -47,14 +73,39 @@ export async function getBooks(options: GetBooksOptions  = {}) {
       break
   }
 
-  return await prisma.book.findMany({
-    where: search ? {
-      title: {
-        contains: search,
-        mode: 'insensitive'
-      }
-    } : undefined,
+  if(search) {
+    where.title = {
+      contains: search,
+      mode: 'insensitive'
+    }
+  }
 
+  const normalizedAuthors = authors
+    ? Array.isArray(authors)
+      ? authors
+      : [authors]
+    : [];
+
+  if(normalizedAuthors.length > 0) {
+    where.author = {
+      in: normalizedAuthors
+    }
+  }
+
+  if(priceMin !== undefined || priceMax !== undefined) {
+    where.price = {}
+
+    if(priceMin !== undefined) {
+      where.price.gte = Number(priceMin)
+    }
+
+    if(priceMax !== undefined) {
+      where.price.lte = Number(priceMax)
+    }
+  }
+
+  return await prisma.book.findMany({
+    where,
     orderBy
   })
 }
