@@ -3,6 +3,7 @@ import styles from "./booksPage.module.css";
 
 import { getAuthors, getBooks, type GetBooksOptions } from "@/services/books";
 import Filters from "@/сomponents/Filters/Filters";
+import BookCard from "@/сomponents/BookCard/BookCard";
 
 export default async function BooksPage({
   searchParams,
@@ -40,21 +41,10 @@ export default async function BooksPage({
           <h2>All books:</h2>
           <div className={styles.booksSection}>
             {books.map((book) => (
-              <div className="book" key={book.id}>
-                <img
-                  src={
-                    book.img
-                      ? book.img
-                      : "https://img.freepik.com/premium-vector/blank-cover-book-magazine-template_212889-605.jpg"
-                  }
-                  alt={`${book.author} - ${book.title}`}
-                  width={100}
-                  height={150}
+                <BookCard
+                  key={book.id}
+                  book={book}
                 />
-                <div>title: {book.title}</div>
-                <div>author: {book.author}</div>
-                <div>price: {book.price}</div>
-              </div>
             ))}
           </div>
         </section>
