@@ -1,9 +1,9 @@
-import SearchInput from "@/сomponents/SearchInput/SearchInput";
+import SearchInput from "@/components/SearchInput/SearchInput";
 import styles from "./booksPage.module.css";
 
 import { getAuthors, getBooks, type GetBooksOptions } from "@/services/books";
-import Filters from "@/сomponents/Filters/Filters";
-import BookCard from "@/сomponents/BookCard/BookCard";
+import Filters from "@/components/Filters/Filters";
+import BookCard from "@/components/BookCard/BookCard";
 
 export default async function BooksPage({
   searchParams,
@@ -37,17 +37,14 @@ export default async function BooksPage({
       <SearchInput />
       <div className={styles.content}>
         <Filters authors={authorsList} />
-        <section>
-          <h2>All books:</h2>
-          <div className={styles.booksSection}>
-            {books.map((book) => (
-                <BookCard
-                  key={book.id}
-                  book={book}
-                />
-            ))}
-          </div>
-        </section>
+        <div className={styles.booksSection}>
+          {books.map((book) => (
+              <BookCard
+                key={book.id}
+                book={book}
+              />
+          ))}
+        </div>
       </div>
     </div>
   );
