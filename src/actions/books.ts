@@ -1,8 +1,12 @@
 "use server"
 
 import { createBook, updateBook, deleteBook } from "@/services/books";
-import { bookSchema, updateBookSchema, type BookFormData, type UpdateBookFormData } from "@/lib/validation";
+import { bookSchema, updateBookSchema, type UpdateBookFormData } from "@/lib/validation";
 import { z } from "zod";
+
+import { writeFile } from "fs/promises";
+import path from "path";
+import { randomUUID } from "crypto";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -27,9 +31,14 @@ type FormActionResult = {
 }
 
 function getFieldErrors(
-  error: z.ZodError<BookFormData | UpdateBookFormData>
+  error: z.ZodError
 ): BookFormErrors {
-  const fieldErrors = z.flattenError(error).fieldErrors;
+  const fieldErrors = z.flattenError(error).fieldErrors as {
+    title?: string[];
+    author?: string[];
+    price?: string[];
+    img?: string[];
+  };
 
   return {
     title: fieldErrors.title?.join(". "),
@@ -40,42 +49,61 @@ function getFieldErrors(
 }
 
 export async function createBookAction(
-  data: BookFormData
+  formData: FormData
 ): Promise<FormActionResult> {
-  const result = bookSchema.safeParse(data)
+  const title = formData.get("title");
+  const author = formData.get("author");
+  const price = formData.get("price");
+  const img = formData.get("img");
 
-  if(!result.success) {
+  const result = bookSchema.safeParse({
+    title,
+    author,
+    price,
+    img: img instanceof File ? img : "",
+  });
+
+  if (!result.success) {
     return {
       success: false,
-      errors: getFieldErrors(result.error)
-    }
+      errors: getFieldErrors(result.error),
+    };
   }
 
-  const existingBook = await prisma.book.findFirst({
-    where: {
-      title: result.data.title,
-      author: result.data.author,
-    }
-  })
+  let imgPath = "";
 
-  if(existingBook) {
-    return {
-      success: false,
-      errors: {
-        form: 'This book already exists'
-      }
-    }
+  if (result.data.img instanceof File) {
+    const buffer = Buffer.from(
+      await result.data.img.arrayBuffer()
+    );
+
+    const fileName = `${randomUUID()}-${result.data.img.name}`;
+
+    const uploadPath = path.join(
+      process.cwd(),
+      "public/uploads/books",
+      fileName
+    );
+
+    await writeFile(uploadPath, buffer);
+
+    imgPath = `/uploads/books/${fileName}`;
   }
 
   try {
-    await createBook(result.data)
+    await createBook({
+      title: result.data.title,
+      author: result.data.author,
+      price: result.data.price,
+      img: imgPath,
+    });
   } catch {
     return {
       success: false,
       errors: {
-        form: 'Failed to create book'
-      }
-    }
+        form: "Failed to create book",
+      },
+    };
   }
 
   revalidatePath("/admin/books");

@@ -1,6 +1,7 @@
 import styles from "./adminBookCard.module.css";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import DeleteBookButton from "../DeleteBookButton/DeleteBookButton";
 
@@ -21,13 +22,9 @@ export default function AdminBookCard({ book }: AdminBookCardProps) {
 
   return (
     <div className={styles.book}>
-      <img
+      <Image
         className={styles.image}
-        src={
-          img
-            ? img
-            : "https://img.freepik.com/premium-vector/blank-cover-book-magazine-template_212889-605.jpg"
-        }
+        src={img || "/images/no-book-cover.jpg"}
         alt={`${author} - ${title}`}
         width={100}
         height={150}

@@ -1,104 +1,74 @@
-"use client"
-import styles from "./CreateBookForm.module.css"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import z from "zod"
-import { createBookAction } from "@/actions/books"
-import { bookSchema, type BookFormData } from "@/lib/validation"
+import styles from "./CreateBookForm.module.css";
 
-type Book = z.input<typeof bookSchema>
+import { createBookAction } from "@/actions/books";
+import { useForm } from "react-hook-form";
 
-export default function CreateBookForm () {
+type CreateBookForm = {
+  title: string;
+  author: string;
+  price: string;
+  img: FileList;
+};
 
+export default function CreateBookForm() {
   const {
     register,
     handleSubmit,
-    setError,
-    formState: {errors, isSubmitting}
-  } = useForm<
-    Book,
-    unknown,
-    BookFormData
-  >({
-    resolver: zodResolver(bookSchema)
-  })
+    formState: { isSubmitting },
+  } = useForm<CreateBookForm>();
 
-  const onSubmit = async (data: BookFormData) => {
-    const result = await createBookAction(data)
+  const onSubmit = async (data: CreateBookForm) => {
+    const formData = new FormData();
 
-    if(!result.success && result.errors) {
-      for (const [field, message] of Object.entries(result.errors)) {
-        if(!message) continue
-        
-        if (field === "form") {
-          setError("root.serverError", {
-            type: "server",
-            message,
-          });
-          continue;
-        }
+    formData.append("title", data.title);
+    formData.append("author", data.author);
+    formData.append("price", data.price);
 
-        setError(
-          field as keyof Book,
-          {
-            type: "server",
-            message
-          }
-        )
-      }
+    if (data.img.length > 0) {
+      formData.append("img", data.img[0]);
     }
-  }
+
+    await createBookAction(formData);
+  };
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className={styles.createBook}
     >
-      {
-        errors?.root?.serverError && (
-          <p className="fieldError"><b>{errors.root.serverError.message}</b></p>
-        )
-      }
       <label>
         <span>title:</span>
-        <input type="text" {...register("title")}/>
-        {
-          errors?.title && (
-            <p className="fieldError">{errors.title.message}</p>
-          )
-        }
+        <input type="text" {...register("title")} />
       </label>
+
       <label>
         <span>author:</span>
-        <input type="text" {...register("author")}/>
-        {
-          errors?.author && (
-            <p className="fieldError">{errors.author.message}</p>
-          )
-        }
+        <input type="text" {...register("author")} />
       </label>
+
       <label>
         <span>price:</span>
-        <input type="text" {...register("price")} placeholder="minimum 1$"/>
-        {
-          errors?.price && (
-            <p className="fieldError">{errors.price.message}</p>
-          )
-        }
+        <input
+          type="text"
+          {...register("price")}
+          placeholder="minimum 1$"
+        />
       </label>
+
       <label>
-        <span>img:</span>
-        <input type="text" {...register("img")}/>
-        {
-          errors?.img && (
-            <p className="fieldError">{errors.img.message}</p>
-          )
-        }
+        <span>image:</span>
+        <input
+          type="file"
+          accept="image/*"
+          {...register("img")}
+        />
       </label>
+
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Creating...' : 'Create'}
+        {isSubmitting ? "Creating..." : "Create"}
       </button>
     </form>
-  )
+  );
 }
