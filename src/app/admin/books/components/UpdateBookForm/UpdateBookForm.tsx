@@ -2,17 +2,23 @@
 
 import styles from "./updateBookForm.module.css"
 
+import Image from "next/image"
 import { useForm } from "react-hook-form"
+import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+
 import  { updateBookAction } from "@/actions/books"
-import { updateBookSchema, type UpdateBookFormData } from "@/lib/validation"
+import { updateBookClientSchema, type UpdateBookFormData } from "@/lib/validation"
+
+type Book = UpdateBookFormData & {
+  img: string;
+};
+
+type FormValues = z.input<typeof updateBookClientSchema>;
 
 type Props = {
-  book: UpdateBookFormData
-}
-
-type Book = z.input<typeof updateBookSchema>
+  book: Book;
+};
 
 export default function UpdateBookForm ({book}: Props) {
   const {title, author, price, img, id} = book
@@ -22,21 +28,25 @@ export default function UpdateBookForm ({book}: Props) {
     handleSubmit,
     setError,
     formState: {errors, isSubmitting}
-  } = useForm<
-    Book,
-    unknown,
-    UpdateBookFormData
-  >({
-    resolver: zodResolver(updateBookSchema)
-  })
+  } = useForm<FormValues>({
+    resolver: zodResolver(updateBookClientSchema),
+  });
 
-  const onSubmit = async (formdata: UpdateBookFormData) => {
-    const result = await updateBookAction(formdata)
+  const onSubmit = async (
+    _: FormValues,
+    event?: React.BaseSyntheticEvent
+  ) => {
+    if (!event?.target) return;
 
-    if(!result.success && result.errors) {
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    
+    const result = await updateBookAction(formData);
+
+    if (!result.success && result.errors) {
       for (const [field, message] of Object.entries(result.errors)) {
-        if(!message) continue
-        
+        if (!message) continue;
+
         if (field === "form") {
           setError("root.serverError", {
             type: "server",
@@ -45,16 +55,13 @@ export default function UpdateBookForm ({book}: Props) {
           continue;
         }
 
-        setError(
-          field as keyof Book,
-          {
-            type: "server",
-            message
-          }
-        )
+        setError(field as "title" | "author" | "price", {
+          type: "server",
+          message,
+        });
       }
     }
-  }
+  };
 
   return (
     <form
@@ -94,8 +101,23 @@ export default function UpdateBookForm ({book}: Props) {
         }
       </label>
       <label>
-        <span>img:</span>
-        <input type="text" {...register("img")} defaultValue={img} />
+        <span>Current image:</span>
+        {
+          img && (
+            <Image
+              src={img}
+              alt={title}
+              width={100}
+              height={170}
+            />
+          )
+        }
+
+        <input
+          type="file"
+          name="img"
+          accept="image/*"
+        />
       </label>
       <input type="hidden" {...register("id")} defaultValue={id} />
       <button type="submit" disabled={isSubmitting}>

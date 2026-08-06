@@ -1,7 +1,7 @@
 "use server"
 
 import { createBook, updateBook, deleteBook } from "@/services/books";
-import { bookSchema, updateBookSchema, type UpdateBookFormData } from "@/lib/validation";
+import { bookSchema, updateBookServerSchema, type UpdateBookFormData } from "@/lib/validation";
 import { z } from "zod";
 
 import { writeFile } from "fs/promises";
@@ -73,19 +73,19 @@ export async function createBookAction(
   let imgPath = "";
 
   if (result.data.img instanceof File) {
-    const buffer = Buffer.from(
-      await result.data.img.arrayBuffer()
+    const buffer = Buffer.from( // Buffer — это объект Node.js для хранения и передачи бинарных данных (байтов). Т.е. это "контейнер с содержимым файла", который Node.js умеет записывать на диск.
+      await result.data.img.arrayBuffer() // arrayBuffer - "Возьми этот файл и дай мне его содержимое в виде набора байтов".
     );
 
     const fileName = `${randomUUID()}-${result.data.img.name}`;
 
     const uploadPath = path.join(
-      process.cwd(),
+      process.cwd(), // Current Working Directory
       "public/uploads/books",
       fileName
     );
 
-    await writeFile(uploadPath, buffer);
+    await writeFile(uploadPath, buffer); //writeFile(путь, данные)
 
     imgPath = `/uploads/books/${fileName}`;
   }
@@ -111,43 +111,80 @@ export async function createBookAction(
 }
 
 export async function updateBookAction(
-  formdata: UpdateBookFormData
+  formData: FormData
 ): Promise<FormActionResult> {
-  const result = updateBookSchema.safeParse(formdata)
+  const id = formData.get("id");
+  const title = formData.get("title");
+  const author = formData.get("author");
+  const price = formData.get("price");
+  const img = formData.get("img");
 
-  if(!result.success) {
+  const result = updateBookServerSchema.safeParse({
+    id,
+    title,
+    author,
+    price,
+    img,
+  });
+
+  if (!result.success) {
     return {
       success: false,
-      errors: getFieldErrors(result.error)
-    }
+      errors: getFieldErrors(result.error),
+    };
   }
 
-  const {id, ...data} = result.data
+  const {
+    id: bookId,
+    img: uploadedImg,
+    ...bookData
+  } = result.data;
 
   const existingBook = await prisma.book.findUnique({
     where: {
-      id
-    }
-  })
+      id: bookId,
+    },
+  });
 
-  if(!existingBook) {
+  if (!existingBook) {
     return {
       success: false,
       errors: {
-        form: 'Book not found'
-      }
-    }
+        form: "Book not found",
+      },
+    };
+  }
+
+  let imgPath = existingBook.img;
+
+  if (uploadedImg instanceof File) {
+    const buffer = Buffer.from(await uploadedImg.arrayBuffer());
+
+    const fileName = `${randomUUID()}-${uploadedImg.name}`;
+
+    const uploadPath = path.join(
+      process.cwd(),
+      "public/uploads/books",
+      fileName
+    );
+
+    await writeFile(uploadPath, buffer);
+
+    imgPath = `/uploads/books/${fileName}`;
   }
 
   try {
-    await updateBook(id, data)
+    await updateBook(bookId, {
+      ...bookData,
+      img: imgPath,
+    });
   } catch {
     return {
       success: false,
       errors: {
-        form: 'Failed to update book'
-      }
-    }
+        form: "Failed to update book",
+      },
+    };
   }
 
   revalidatePath("/admin/books");
