@@ -108,28 +108,33 @@ export default function UpdateBookForm ({book}: Props) {
         }
       </label>
       <label>
-        <span>Current images:</span>
-        {images
-          .filter((image) => !deletedImageIds.includes(image.id))
-          .map((image) => (
-            <div key={image.id}>
-              <Image
-                src={image.url}
-                alt={title}
-                width={80}
-                height={120}
-              />
+        {images.length > 0 ? (<span>Current images:</span>) : (<span>Add images:</span>)}
+        <div className={styles.images}>
+          {images
+            .filter((image) => !deletedImageIds.includes(image.id))
+            .map((image) => (
+              <div key={image.id} className={styles.imageWrapper}>
+                <Image
+                  src={image.url}
+                  alt={title}
+                  width={80}
+                  height={120}
+                  className={styles.image}
+                />
 
-              <button
-                type="button"
-                onClick={() =>
-                  setDeletedImageIds((prev) => [...prev, image.id])
-                }
-              >
-                Delete
-              </button>
-            </div>
-        ))}
+                <button
+                  type="button"
+                  className={styles.deleteButton}
+                  onClick={() =>
+                    setDeletedImageIds((prev) => [...prev, image.id])
+                  }
+                  aria-label="Delete image"
+                >
+                  ×
+                </button>
+              </div>
+          ))}
+        </div>
 
         <input
           type="file"
