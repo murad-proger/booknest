@@ -1,10 +1,14 @@
 import styles from "./BookCard.module.css";
 
-import type { Book } from "@/generated/prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import Image from "next/image";
 
 type Props = {
-  book: Book;
+  book: Prisma.BookGetPayload<{
+    include: {
+      images: true;
+    };
+  }>;
 };
 
 export default function BookCard({ book }: Props) {
@@ -12,7 +16,7 @@ export default function BookCard({ book }: Props) {
     <article className={styles.card}>
       <Image
         className={styles.image}
-        src={book.img ? book.img : "/images/no-book-cover.jpg"}
+        src={book.images ? book.images[0].url : "/images/no-book-cover.jpg"}
         alt={`${book.author} - ${book.title}`}
         width={140}
         height={200}

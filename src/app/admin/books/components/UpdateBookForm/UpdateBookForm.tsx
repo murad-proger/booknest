@@ -3,6 +3,7 @@
 import styles from "./updateBookForm.module.css"
 
 import Image from "next/image"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -11,24 +12,30 @@ import  { updateBookAction } from "@/actions/books"
 import { updateBookClientSchema, type UpdateBookFormData } from "@/lib/validation"
 
 type Book = UpdateBookFormData & {
-  img: string;
+  images: { id: number; url: string; }[];
 };
 
-type FormValues = z.input<typeof updateBookClientSchema>;
+type FormValues = z.output<typeof updateBookClientSchema>;
 
 type Props = {
   book: Book;
 };
 
 export default function UpdateBookForm ({book}: Props) {
-  const {title, author, price, img, id} = book
+  const {title, author, price, images, id} = book
+
+  const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
 
   const {
     register,
     handleSubmit,
     setError,
     formState: {errors, isSubmitting}
-  } = useForm<FormValues>({
+  } = useForm<
+      z.input<typeof updateBookClientSchema>,
+      unknown,
+      FormValues
+  >({
     resolver: zodResolver(updateBookClientSchema),
   });
 
@@ -101,25 +108,42 @@ export default function UpdateBookForm ({book}: Props) {
         }
       </label>
       <label>
-        <span>Current image:</span>
-        {
-          img && (
-            <Image
-              src={img}
-              alt={title}
-              width={100}
-              height={170}
-            />
-          )
-        }
+        <span>Current images:</span>
+        {images
+          .filter((image) => !deletedImageIds.includes(image.id))
+          .map((image) => (
+            <div key={image.id}>
+              <Image
+                src={image.url}
+                alt={title}
+                width={80}
+                height={120}
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setDeletedImageIds((prev) => [...prev, image.id])
+                }
+              >
+                Delete
+              </button>
+            </div>
+        ))}
 
         <input
           type="file"
-          name="img"
+          name="newImages"
           accept="image/*"
+          multiple
         />
       </label>
       <input type="hidden" {...register("id")} defaultValue={id} />
+      <input
+        type="hidden"
+        name="deletedImageIds"
+        value={JSON.stringify(deletedImageIds)}
+      />
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Updating...' : 'Update'}
       </button>

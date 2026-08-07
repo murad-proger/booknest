@@ -2,15 +2,19 @@ import type { Prisma } from "@/generated/prisma/client"
 import { prisma } from "@/lib/prisma"
 
 export type BookData = {
-  title: string,
-  author: string,
-  price: number,
-  img: string,
-}
+  title: string;
+  author: string;
+  price: number;
+};
 
-type CreateBookData = BookData
+export type CreateBookData = BookData & {
+  images: string[];
+};
 
-type UpdateBookData = Partial<BookData>
+export type UpdateBookData = Partial<BookData> & {
+  newImages?: string[];
+  deletedImageIds?: number[];
+};
 
 export type GetBooksOptions = {
   search?: string;
@@ -106,31 +110,73 @@ export async function getBooks(options: GetBooksOptions  = {}) {
 
   return await prisma.book.findMany({
     where,
-    orderBy
+    orderBy,
+    include: {
+      images: true,
+    },
   })
 }
 
-export async function createBook(data: CreateBookData) {
+export async function createBook({
+  images,
+  ...book
+}: CreateBookData) {
   return await prisma.book.create({
-    data
-  })
+    data: {
+      ...book,
+      images: {
+        create: images.map((url) => ({
+          url,
+        })),
+      },
+    },
+    include: {
+      images: true,
+    },
+  });
 }
 
-export async function updateBook(id: number, data: UpdateBookData) {
+export async function updateBook(
+  id: number,
+  {
+    newImages = [],
+    deletedImageIds = [],
+    ...book
+  }: UpdateBookData
+) {
   return await prisma.book.update({
-    data,
-    where: {
-      id
-    }
-  })
+    where: { id },
+    data: {
+      ...book,
+
+      images: {
+        deleteMany: {
+          id: {
+            in: deletedImageIds,
+          },
+        },
+
+        create: newImages.map((url) => ({
+          url,
+        })),
+      },
+    },
+
+    include: {
+      images: true,
+    },
+  });
 }
 
 export async function getBookById(id: number) {
   return await prisma.book.findUnique({
     where: {
-      id
-    }
-  })
+      id,
+    },
+    include: {
+      images: true,
+    },
+  });
 }
 
 export async function deleteBook(id: number) {

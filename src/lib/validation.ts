@@ -6,32 +6,24 @@ export const bookFields = {
   price: z.coerce.number().min(1, "Price must be greater than 0"),
 };
 
-const imageSchema = z
-  .unknown()
+const fileSchema = z
+  .custom<File>((file) => file instanceof File, {
+    message: "Invalid file",
+  })
   .refine(
-    (file) =>
-      file instanceof File === false ||
-      file.size === 0 ||
-      file.type.startsWith("image/"),
+    (file) => file.type.startsWith("image/"),
     "Only images are allowed"
   )
   .refine(
-    (file) =>
-      file instanceof File === false ||
-      file.size <= 5_000_000,
+    (file) => file.size <= 5_000_000,
     "Image must be less than 5MB"
-  )
-  .transform((file) => {
-    if (file instanceof File && file.size > 0) {
-      return file;
-    }
+  );
 
-    return "";
-  });
+const imagesServerSchema = z.array(fileSchema).default([]);
 
 export const bookSchema = z.object({
   ...bookFields,
-  img: imageSchema
+  images: imagesServerSchema,
 });
 
 export const updateBookClientSchema = z.object({
@@ -43,7 +35,8 @@ export const updateBookServerSchema = z.object({
   ...bookFields,
   id: z.coerce.number().int().positive(),
 
-  img: imageSchema
+  newImages: imagesServerSchema.optional(),
+  deletedImageIds: z.array(z.number()).default([]),
 });
 
 export type UpdateBookFormData = z.infer<typeof updateBookClientSchema>;

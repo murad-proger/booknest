@@ -1,7 +1,7 @@
 "use server"
 
 import { createBook, updateBook, deleteBook } from "@/services/books";
-import { bookSchema, updateBookServerSchema, type UpdateBookFormData } from "@/lib/validation";
+import { bookSchema, updateBookServerSchema } from "@/lib/validation";
 import { z } from "zod";
 
 import { writeFile } from "fs/promises";
@@ -54,13 +54,13 @@ export async function createBookAction(
   const title = formData.get("title");
   const author = formData.get("author");
   const price = formData.get("price");
-  const img = formData.get("img");
+  const images = formData.getAll("images");
 
   const result = bookSchema.safeParse({
     title,
     author,
     price,
-    img: img instanceof File ? img : "",
+    images,
   });
 
   if (!result.success) {
@@ -70,14 +70,14 @@ export async function createBookAction(
     };
   }
 
-  let imgPath = "";
+  const imagePaths: string[] = [];
 
-  if (result.data.img instanceof File) {
-    const buffer = Buffer.from( // Buffer — это объект Node.js для хранения и передачи бинарных данных (байтов). Т.е. это "контейнер с содержимым файла", который Node.js умеет записывать на диск.
-      await result.data.img.arrayBuffer() // arrayBuffer - "Возьми этот файл и дай мне его содержимое в виде набора байтов".
-    );
+  for (const image of result.data.images) {
+    const buffer = Buffer.from(await image.arrayBuffer());
+    // Buffer — это объект Node.js для хранения и передачи бинарных данных (байтов). Т.е. это "контейнер с содержимым файла", который Node.js умеет записывать на диск.
+    // arrayBuffer - "Возьми этот файл и дай мне его содержимое в виде набора байтов".
 
-    const fileName = `${randomUUID()}-${result.data.img.name}`;
+    const fileName = `${randomUUID()}-${image.name}`;
 
     const uploadPath = path.join(
       process.cwd(), // Current Working Directory
@@ -87,7 +87,7 @@ export async function createBookAction(
 
     await writeFile(uploadPath, buffer); //writeFile(путь, данные)
 
-    imgPath = `/uploads/books/${fileName}`;
+    imagePaths.push(`/uploads/books/${fileName}`);
   }
 
   try {
@@ -95,7 +95,7 @@ export async function createBookAction(
       title: result.data.title,
       author: result.data.author,
       price: result.data.price,
-      img: imgPath,
+      images: imagePaths,
     });
   } catch {
     return {
@@ -117,14 +117,20 @@ export async function updateBookAction(
   const title = formData.get("title");
   const author = formData.get("author");
   const price = formData.get("price");
-  const img = formData.get("img");
+  const newImages = formData.getAll("newImages");
+  const deletedImageIdsRaw = formData.get("deletedImageIds");
+
+  const deletedImageIds = deletedImageIdsRaw
+    ? JSON.parse(deletedImageIdsRaw as string)
+    : [];
 
   const result = updateBookServerSchema.safeParse({
     id,
     title,
     author,
     price,
-    img,
+    newImages,
+    deletedImageIds,
   });
 
   if (!result.success) {
@@ -136,7 +142,8 @@ export async function updateBookAction(
 
   const {
     id: bookId,
-    img: uploadedImg,
+    newImages: validatedNewImages,
+    deletedImageIds: validatedDeletedImageIds,
     ...bookData
   } = result.data;
 
@@ -155,12 +162,12 @@ export async function updateBookAction(
     };
   }
 
-  let imgPath = existingBook.img;
+  const uploadedPaths: string[] = [];
 
-  if (uploadedImg instanceof File) {
-    const buffer = Buffer.from(await uploadedImg.arrayBuffer());
+  for (const image of validatedNewImages ?? []) {
+    const buffer = Buffer.from(await image.arrayBuffer());
 
-    const fileName = `${randomUUID()}-${uploadedImg.name}`;
+    const fileName = `${randomUUID()}-${image.name}`;
 
     const uploadPath = path.join(
       process.cwd(),
@@ -170,13 +177,14 @@ export async function updateBookAction(
 
     await writeFile(uploadPath, buffer);
 
-    imgPath = `/uploads/books/${fileName}`;
+    uploadedPaths.push(`/uploads/books/${fileName}`);
   }
 
   try {
     await updateBook(bookId, {
       ...bookData,
-      img: imgPath,
+      newImages: uploadedPaths,
+      deletedImageIds: validatedDeletedImageIds,
     });
   } catch {
     return {

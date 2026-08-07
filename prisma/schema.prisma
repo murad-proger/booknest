@@ -8,9 +8,18 @@ datasource db {
 }
 
 model Book {
-  id     Int     @id @default(autoincrement())
-  title  String
-  author String
-  price  Float
-  img    String
+  id      Int         @id @default(autoincrement())
+  title   String
+  author  String
+  price   Float
+
+  images  BookImage[]
+}
+
+model BookImage {
+  id      Int    @id @default(autoincrement())
+  url     String
+
+  bookId  Int
+  book    Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
 }

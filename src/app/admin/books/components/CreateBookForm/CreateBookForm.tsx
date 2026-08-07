@@ -9,7 +9,7 @@ type CreateBookForm = {
   title: string;
   author: string;
   price: string;
-  img: FileList;
+  images: FileList;
 };
 
 export default function CreateBookForm() {
@@ -26,8 +26,8 @@ export default function CreateBookForm() {
     formData.append("author", data.author);
     formData.append("price", data.price);
 
-    if (data.img.length > 0) {
-      formData.append("img", data.img[0]);
+    for (const image of data.images) {
+      formData.append("images", image);
     }
 
     await createBookAction(formData);
@@ -62,7 +62,8 @@ export default function CreateBookForm() {
         <input
           type="file"
           accept="image/*"
-          {...register("img")}
+          multiple
+          {...register("images")}
         />
       </label>
 

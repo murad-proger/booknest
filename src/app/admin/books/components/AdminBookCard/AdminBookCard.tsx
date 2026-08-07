@@ -10,7 +10,10 @@ type BookData = {
   title: string;
   author: string;
   price: number;
-  img: string;
+  images: {
+    id: number;
+    url: string;
+  }[];
 };
 
 type AdminBookCardProps = {
@@ -18,13 +21,13 @@ type AdminBookCardProps = {
 };
 
 export default function AdminBookCard({ book }: AdminBookCardProps) {
-  const { id, title, author, price, img } = book;
+  const { id, title, author, price, images } = book;
 
   return (
     <div className={styles.book}>
       <Image
         className={styles.image}
-        src={img || "/images/no-book-cover.jpg"}
+        src={images[0]?.url ?? "/images/no-book-cover.jpg"}
         alt={`${author} - ${title}`}
         width={100}
         height={150}
