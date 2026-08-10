@@ -16,7 +16,7 @@ interface BookFormErrors {
   title?: string;
   author?: string;
   price?: string;
-  img?: string;
+  images?: string;
   form?: string;
 }
 
@@ -37,14 +37,14 @@ function getFieldErrors(
     title?: string[];
     author?: string[];
     price?: string[];
-    img?: string[];
+    images?: string[];
   };
 
   return {
     title: fieldErrors.title?.join(". "),
     author: fieldErrors.author?.join(". "),
     price: fieldErrors.price?.join(". "),
-    img: fieldErrors.img?.join(". "),
+    images: fieldErrors.images?.join(". "),
   };
 }
 
