@@ -65,13 +65,13 @@ export default function CreateBookForm() {
       className={styles.createBook}
     >
       {errors.root?.serverError && (
-        <p>{errors.root.serverError.message}</p>
+        <p className="fieldError">{errors.root.serverError.message}</p>
       )}
       <label>
         <span>title:</span>
         <input type="text" {...register("title")} />
         {errors.title && (
-          <p>{errors.title.message}</p>
+          <p className="fieldError">{errors.title.message}</p>
         )}
       </label>
 
@@ -79,7 +79,7 @@ export default function CreateBookForm() {
         <span>author:</span>
         <input type="text" {...register("author")} />
         {errors.author && (
-          <p>{errors.author.message}</p>
+          <p className="fieldError">{errors.author.message}</p>
         )}
       </label>
 
@@ -91,7 +91,7 @@ export default function CreateBookForm() {
           placeholder="minimum 1$"
         />
         {errors.price && (
-          <p>{errors.price.message}</p>
+          <p className="fieldError">{errors.price.message}</p>
         )}
       </label>
 
@@ -113,7 +113,7 @@ export default function CreateBookForm() {
                 }}
               />
               {errors.images && (
-                <p>{errors.images.message}</p>
+                <p className="fieldError">{errors.images.message}</p>
               )}
             </>
           )}

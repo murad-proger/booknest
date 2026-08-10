@@ -15,7 +15,7 @@ const fileSchema = z
     "Only images are allowed"
   )
   .refine(
-    (file) => file.size <= 5_000_000,
+    (file) => file.size <= 1_000_000,
     "Image must be less than 5MB"
   );
 

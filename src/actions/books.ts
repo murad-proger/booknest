@@ -17,6 +17,7 @@ interface BookFormErrors {
   author?: string;
   price?: string;
   images?: string;
+  newImages?: string;
   form?: string;
 }
 
@@ -38,6 +39,7 @@ function getFieldErrors(
     author?: string[];
     price?: string[];
     images?: string[];
+    newImages?: string[];
   };
 
   return {
@@ -45,6 +47,7 @@ function getFieldErrors(
     author: fieldErrors.author?.join(". "),
     price: fieldErrors.price?.join(". "),
     images: fieldErrors.images?.join(". "),
+    newImages: fieldErrors.newImages?.join(". "),
   };
 }
 
@@ -117,7 +120,10 @@ export async function updateBookAction(
   const title = formData.get("title");
   const author = formData.get("author");
   const price = formData.get("price");
-  const newImages = formData.getAll("newImages");
+  const newImages = formData.getAll("newImages").filter(
+    (image): image is File =>
+      image instanceof File && image.size > 0
+  );
   const deletedImageIdsRaw = formData.get("deletedImageIds");
 
   const deletedImageIds = deletedImageIdsRaw

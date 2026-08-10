@@ -26,6 +26,8 @@ export default function UpdateBookForm ({book}: Props) {
 
   const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
 
+  const [newImagesError, setNewImagesError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -45,6 +47,8 @@ export default function UpdateBookForm ({book}: Props) {
   ) => {
     if (!event?.target) return;
 
+    setNewImagesError(null);
+
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
     
@@ -59,6 +63,11 @@ export default function UpdateBookForm ({book}: Props) {
             type: "server",
             message,
           });
+          continue;
+        }
+
+        if (field === "newImages") {
+          setNewImagesError(message);
           continue;
         }
 
@@ -77,33 +86,30 @@ export default function UpdateBookForm ({book}: Props) {
     >
       {
         errors?.root?.serverError && (
-          <p>{errors.root.serverError.message}</p>
+          <p className="fieldError">{errors.root.serverError.message}</p>
         )
       }
       <label>
         <span>title:</span>
         <input type="text" {...register("title")} defaultValue={title} />
-        {
-          errors?.title && (
-            <p>{errors.title.message}</p>
+        {errors?.title && (
+            <p className="fieldError">{errors.title.message}</p>
           )
         }
       </label>
       <label>
         <span>author:</span>
         <input type="text" {...register("author")} defaultValue={author} />
-        {
-          errors?.author && (
-            <p>{errors.author.message}</p>
+        {errors?.author && (
+            <p className="fieldError">{errors.author.message}</p>
           )
         }
       </label>
       <label>
         <span>price:</span>
         <input type="text" {...register("price")} defaultValue={price} placeholder="minimum 1$"/>
-        {
-          errors?.price && (
-            <p>{errors.price.message}</p>
+        {errors?.price && (
+            <p className="fieldError">{errors.price.message}</p>
           )
         }
       </label>
@@ -142,6 +148,10 @@ export default function UpdateBookForm ({book}: Props) {
           accept="image/*"
           multiple
         />
+        {newImagesError  && (
+            <p className="fieldError">{newImagesError }</p>
+          )
+        }
       </label>
       <input type="hidden" {...register("id")} defaultValue={id} />
       <input
