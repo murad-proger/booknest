@@ -1,21 +1,29 @@
 "use client"
 
-import { useAppDispatch } from "@/lib/hooks"
+import styles from "./AddToCartButton.module.css"
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { addToCart } from "@/lib/features/cart/cartSlice"
 
 export default function AddToCartButton({ id }: { id: number }) {
   const dispatch = useAppDispatch()
 
-  const handleClick = (id: number) => {
+  const isInCart = useAppSelector((state) =>
+    state.cart.items.some((item) => item.id === id)
+  )
+
+  const handleClick = () => {
     dispatch(addToCart(id))
   }
 
   return (
     <button
-      onClick={() => handleClick(id)}
+      className={styles.button}
+      onClick={handleClick}
       type="button"
+      disabled={isInCart}
     >
-      Add to cart
+      {isInCart ? "Added" : "Add to cart"}
     </button>
   )
 }
