@@ -1,14 +1,13 @@
 "use client"
 
+import { useAppDispatch } from "@/lib/hooks"
+import { addToCart } from "@/lib/features/cart/cartSlice"
+
 export default function AddToCartButton({ id }: { id: number }) {
+  const dispatch = useAppDispatch()
+
   const handleClick = (id: number) => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]")
-
-    cart.push(id)
-
-    console.log(cart)
-
-    localStorage.setItem("cart", JSON.stringify(cart))
+    dispatch(addToCart(id))
   }
 
   return (

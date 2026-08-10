@@ -3,7 +3,7 @@
   align-items: center;
   gap: 20px;
   padding: 20px 0;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--foreground)
 }
 
 .bookInfo {
@@ -20,6 +20,11 @@
   margin: 0;
   color: #666;
   font-size: 14px;
+}
+
+.price {
+  color: var(--foreground);
+  margin-top: 10px;
 }
 
 .removeButton {

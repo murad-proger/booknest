@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import StoreProvider from "@/providers/StoreProvider";
+import HeaderCart from "@/components/Cart/HeaderCart/HeaderCart";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,30 +28,32 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <header
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '20px',
-            borderBottom: '1px solid',
-            padding: '20px 0'
-          }}
-        >
-          <Link href={'/'}>Booknest</Link>
-          <div
-            className="nav"
-              style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              gap: '20px'
+        <StoreProvider>
+          <header
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "20px",
+              borderBottom: "1px solid",
+              padding: "20px 0",
             }}
           >
-            <Link href={'/admin'}>Admin</Link>
-            <Link href={'/books'}>Books</Link>
-          </div>
-          <div></div>
-        </header>
-        {children}
+            <Link href={"/"}>Booknest</Link>
+            <div
+              className="nav"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "20px",
+              }}
+            >
+              <Link href={"/admin"}>Admin</Link>
+              <Link href={"/books"}>Books</Link>
+            </div>
+            <HeaderCart />
+          </header>
+          {children}
+        </StoreProvider>
       </body>
     </html>
   );
