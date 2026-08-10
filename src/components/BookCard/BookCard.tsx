@@ -2,6 +2,7 @@ import styles from "./BookCard.module.css";
 
 import type { Prisma } from "@/generated/prisma/client";
 import Image from "next/image";
+import AddToCartButton from "../AddToCartButton/AddToCartButton";
 
 type Props = {
   book: Prisma.BookGetPayload<{
@@ -27,9 +28,12 @@ export default function BookCard({ book }: Props) {
 
         <p className={styles.author}>{book.author}</p>
 
-        <p className={styles.price}>
-          ${book.price.toFixed(2)}
-        </p>
+        <div className={styles.bottom}>
+          <p className={styles.price}>
+            ${book.price.toFixed(2)}
+          </p>
+          <AddToCartButton id={book.id} />
+        </div>
       </div>
     </article>
   );

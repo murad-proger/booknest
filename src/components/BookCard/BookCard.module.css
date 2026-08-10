@@ -42,8 +42,14 @@
 }
 
 .price {
-  margin-top: auto;
-
   font-size: 20px;
   font-weight: 700;
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 10px;
+  margin-top: auto;
 }
