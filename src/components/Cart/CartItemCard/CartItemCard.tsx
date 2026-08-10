@@ -2,20 +2,18 @@ import styles from "./CartItemCard.module.css";
 
 import Image from "next/image";
 
-import { useAppSelector, useAppDispatch } from "@/lib/hooks";
-import { removeFromCart } from "@/lib/features/cart/cartSlice";
+import { useAppSelector } from "@/lib/hooks";
 
 
 import type { Book } from "@/types/book";
 import Counter from "../Counter/Counter";
+import RemoveFromCartButton from "../RemoveFromCartButton/RemoveFromCartButton";
 
 type CartItemCardProps = {
   book: Book
 };
 
 export default function CartItemCard({ book }: CartItemCardProps) {
-  const dispatch = useAppDispatch()
-
   const image = book.images[0]?.url || "/images/no-book-cover.jpg";
 
   const quantity = useAppSelector(
@@ -39,14 +37,7 @@ export default function CartItemCard({ book }: CartItemCardProps) {
 
       <Counter id={book.id} quantity={quantity} />
 
-      <button
-        type="button"
-        className={styles.removeButton}
-        aria-label={`Remove ${book.title} from cart`}
-        onClick={() => dispatch(removeFromCart(book.id))}
-      >
-        ×
-      </button>
+      <RemoveFromCartButton title={book.title} id={book.id} />
     </article>
   );
 }
