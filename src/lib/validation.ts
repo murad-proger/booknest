@@ -39,4 +39,15 @@ export const updateBookServerSchema = z.object({
   deletedImageIds: z.array(z.number()).default([]),
 });
 
+export const registerSchema = z.object({
+  name: z.string().trim().min(2, "Name must be 2 characters or more"),
+  email: z.email(),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export const loginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
 export type UpdateBookFormData = z.infer<typeof updateBookClientSchema>;
