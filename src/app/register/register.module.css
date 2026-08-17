@@ -34,6 +34,7 @@
   transition: top 0.3s linear, left 0.3s linear;
 }
 
+.field:has(input:not(:placeholder-shown)) span,
 .field:focus-within span {
   top: -25px;
   left: 0;

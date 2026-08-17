@@ -17,13 +17,13 @@ export default function LoginPage() {
       <form className={styles.form} action={action}>
         <label className={styles.field}>
           <span>email:</span>
-          <input type="text" name="email" />
+          <input type="text" name="email" placeholder=" " />
           {state?.errors.email && <p className="fieldError">{state.errors.email[0]}</p>}
         </label>
 
         <label className={styles.field}>
           <span>password:</span>
-          <input type="password" name="password" />
+          <input type="password" name="password" placeholder=" " />
           {state?.errors.password && <p className="fieldError">{state.errors.password[0]}</p>}
         </label>
 

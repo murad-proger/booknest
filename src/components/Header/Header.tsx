@@ -2,8 +2,12 @@ import styles from "./Header.module.css"
 
 import Link from "next/link";
 import HeaderCart from "../Cart/HeaderCart/HeaderCart";
+import { auth } from "@/lib/auth";
+import LogoutButton from "../LogoutButton/LogoutButton";
 
-export default function Header() {
+export default async function Header() {
+  const session = await auth()
+
   return (
     <header className={styles.header}>
       <Link href={"/"}>Booknest</Link>
@@ -13,8 +17,16 @@ export default function Header() {
       </nav>
       <div className={styles.leftPanel}>
         <HeaderCart />
-        <Link href="/login" className={styles.login}>Login</Link>
-        <Link href="/register" className={styles.register}>Register</Link>
+        {
+          session?.user
+           ? (<><span>{session.user.name}</span> <LogoutButton /></>)
+           : (
+            <>
+              <Link href="/login" className={styles.login}>Login</Link>
+              <Link href="/register" className={styles.register}>Register</Link>
+            </>
+           )
+        }
       </div>
     </header>
   );
