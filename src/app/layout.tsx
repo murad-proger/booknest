@@ -1,9 +1,9 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Link from "next/link";
 import StoreProvider from "@/providers/StoreProvider";
-import HeaderCart from "@/components/Cart/HeaderCart/HeaderCart";
+import Header from "@/components/Header/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,29 +29,7 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <StoreProvider>
-          <header
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: "20px",
-              borderBottom: "1px solid",
-              padding: "20px 0",
-            }}
-          >
-            <Link href={"/"}>Booknest</Link>
-            <div
-              className="nav"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "20px",
-              }}
-            >
-              <Link href={"/admin"}>Admin</Link>
-              <Link href={"/books"}>Books</Link>
-            </div>
-            <HeaderCart />
-          </header>
+          <Header />
           {children}
         </StoreProvider>
       </body>
