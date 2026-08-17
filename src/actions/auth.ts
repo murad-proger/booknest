@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { loginSchema, registerSchema } from "@/lib/validation";
 import { signIn } from "@/lib/auth";
+import { CredentialsSignin } from "next-auth";
 
 export type RegisterState = {
   errors: {
@@ -17,7 +18,6 @@ export type RegisterState = {
 
 export type LoginState = {
   errors: {
-    name?: string[];
     email?: string[];
     password?: string[];
   };
@@ -73,9 +73,21 @@ export async function login(_: LoginState  | undefined, formdata: FormData) {
     };
   }
 
-  await signIn("credentials", {
-    email: result.data.email,
-    password: result.data.password,
-    redirectTo: "/",
-  });
+  try{
+    await signIn("credentials", {
+      email: result.data.email,
+      password: result.data.password,
+      redirectTo: "/",
+    });
+  }catch(error) {
+    if(error instanceof CredentialsSignin) {
+      return {
+        errors: {
+          email: ["Invalid email or password"]
+        }
+      }
+    }
+
+    throw error
+  }
 }
