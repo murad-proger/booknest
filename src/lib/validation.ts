@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { Role } from "@/generated/prisma/enums";
+
 export const bookFields = {
   title: z.string().trim().min(1, "Title is required"),
   author: z.string().trim().min(1, "Author is required"),
@@ -39,6 +41,8 @@ export const updateBookServerSchema = z.object({
   deletedImageIds: z.array(z.number()).default([]),
 });
 
+export type UpdateBookFormData = z.infer<typeof updateBookClientSchema>;
+
 export const registerSchema = z.object({
   name: z.string().trim().min(2, "Name must be 2 characters or more"),
   email: z.email(),
@@ -50,4 +54,17 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export type UpdateBookFormData = z.infer<typeof updateBookClientSchema>;
+export const userFields = {
+  name: z.string().trim().min(2, "Name must be 2 characters or more"),
+  email: z.email(),
+  role: z.enum(Role),
+};
+
+export const updateUserClientSchema = z.object({
+  ...userFields,
+});
+
+export const updateUserServerSchema = z.object({
+  ...userFields,
+  id: z.coerce.number().int().positive(),
+});

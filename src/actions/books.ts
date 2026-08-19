@@ -54,16 +54,11 @@ function getFieldErrors(
 export async function createBookAction(
   formData: FormData
 ): Promise<FormActionResult> {
-  const title = formData.get("title");
-  const author = formData.get("author");
-  const price = formData.get("price");
-  const images = formData.getAll("images");
-
   const result = bookSchema.safeParse({
-    title,
-    author,
-    price,
-    images,
+    title: formData.get("title"),
+    author: formData.get("author"),
+    price: formData.get("price"),
+    images: formData.getAll("images"),
   });
 
   if (!result.success) {
