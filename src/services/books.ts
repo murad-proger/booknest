@@ -108,7 +108,7 @@ export async function getBooks(options: GetBooksOptions  = {}) {
     }
   }
 
-  return await prisma.book.findMany({
+  return prisma.book.findMany({
     where,
     orderBy,
     include: {
@@ -121,7 +121,7 @@ export async function createBook({
   images,
   ...book
 }: CreateBookData) {
-  return await prisma.book.create({
+  return prisma.book.create({
     data: {
       ...book,
       images: {
@@ -144,7 +144,7 @@ export async function updateBook(
     ...book
   }: UpdateBookData
 ) {
-  return await prisma.book.update({
+  return prisma.book.update({
     where: { id },
     data: {
       ...book,
@@ -169,7 +169,7 @@ export async function updateBook(
 }
 
 export async function getBookById(id: number) {
-  return await prisma.book.findUnique({
+  return prisma.book.findUnique({
     where: {
       id,
     },
@@ -180,7 +180,7 @@ export async function getBookById(id: number) {
 }
 
 export async function deleteBook(id: number) {
-  return await prisma.book.delete({
+  return prisma.book.delete({
     where: {
       id
     }

@@ -10,7 +10,13 @@ export default function AdminPage () {
           href={'/admin/books'}
           className={styles.link}
         >
-          Manage Books
+          Manage books
+        </Link>
+        <Link
+          href={'/admin/users'}
+          className={styles.link}
+        >
+          Manage users
         </Link>
       </section>
     </>

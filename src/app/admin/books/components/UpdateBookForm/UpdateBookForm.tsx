@@ -113,7 +113,7 @@ export default function UpdateBookForm ({book}: Props) {
           )
         }
       </label>
-      <label>
+      <fieldset>
         {images.length > 0 ? (<span>Current images:</span>) : (<span>Add images:</span>)}
         <div className={styles.images}>
           {images
@@ -152,7 +152,7 @@ export default function UpdateBookForm ({book}: Props) {
             <p className="fieldError">{newImagesError }</p>
           )
         }
-      </label>
+      </fieldset>
       <input type="hidden" {...register("id")} defaultValue={id} />
       <input
         type="hidden"
