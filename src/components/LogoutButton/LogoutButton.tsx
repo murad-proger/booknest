@@ -1,15 +1,32 @@
-import styles from "./LogoutButton.module.css"
+"use client";
 
-import { signOut } from "@/lib/auth"
+import styles from "./LogoutButton.module.css";
+
+import { signOut } from "next-auth/react";
+
+import { clearCart } from "@/lib/features/cart/cartSlice";
+import { useAppDispatch } from "@/lib/hooks";
 
 export default function LogoutButton() {
-  return (
-    <form action={async () => {
-      "use server"
+  const dispatch = useAppDispatch();
 
-      await signOut()
-    }}>
-      <button className={styles.logout}>Logout</button>
-    </form>
-  )
+  const handleLogout = async () => {
+    dispatch(clearCart());
+
+    localStorage.removeItem("cart");
+    localStorage.removeItem("cart-owner");
+
+    await signOut({
+      redirectTo: "/",
+    });
+  };
+
+  return (
+    <button
+      className={styles.logout}
+      onClick={handleLogout}
+    >
+      Logout
+    </button>
+  );
 }

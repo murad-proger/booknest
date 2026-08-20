@@ -6,11 +6,13 @@ type CartItem = {
 }
 
 type CartState = {
-  items: CartItem[]
+  items: CartItem[],
+  hydrated: boolean
 }
 
 const initialState: CartState = {
-  items: []
+  items: [],
+  hydrated: false
 }
 
 type ChangeQuantityPayload = {
@@ -59,6 +61,10 @@ const cartSlice = createSlice({
 
     hydrateCart: (state, action: PayloadAction<CartItem[]>) => {
       state.items = action.payload
+    },
+
+    setHydrated: (state) => {
+      state.hydrated = true
     }
   }
 })
@@ -69,6 +75,7 @@ export const {
   changeQuantity,
   clearCart,
   hydrateCart,
+  setHydrated,
 } = cartSlice.actions
 
 export default cartSlice.reducer

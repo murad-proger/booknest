@@ -21,6 +21,7 @@ export type LoginState = {
     email?: string[];
     password?: string[];
   };
+  success?: boolean;
 };
 
 export async function register(_: RegisterState, formData: FormData) {
@@ -44,7 +45,9 @@ export async function register(_: RegisterState, formData: FormData) {
     },
   });
 
-  if (existUser) throw new Error("User already exist");
+  if (existUser) {
+    throw new Error("User already exist");
+  }
 
   const hashedPassword = await bcrypt.hash(result.data.password, 10);
 
@@ -59,7 +62,10 @@ export async function register(_: RegisterState, formData: FormData) {
   redirect("/");
 }
 
-export async function login(_: LoginState  | undefined, formdata: FormData) {
+export async function login(
+  _: LoginState | undefined,
+  formdata: FormData
+): Promise<LoginState> {
   const result = loginSchema.safeParse({
     email: formdata.get("email"),
     password: formdata.get("password"),
@@ -73,21 +79,26 @@ export async function login(_: LoginState  | undefined, formdata: FormData) {
     };
   }
 
-  try{
+  try {
     await signIn("credentials", {
       email: result.data.email,
       password: result.data.password,
-      redirectTo: "/",
+      redirect: false,
     });
-  }catch(error) {
-    if(error instanceof CredentialsSignin) {
+  } catch (error) {
+    if (error instanceof CredentialsSignin) {
       return {
         errors: {
-          email: ["Invalid email or password"]
-        }
-      }
+          email: ["Invalid email or password"],
+        },
+      };
     }
 
-    throw error
+    throw error;
   }
+
+  return {
+    errors: {},
+    success: true,
+  };
 }

@@ -18,26 +18,3 @@
   align-items: center;
   column-gap: 10px;
 }
-
-.login {
-  color: var(--foreground);
-  border: 1px solid var(--foreground);
-  border-radius: 5px;
-  padding: 5px 10px;
-}
-
-.login:hover {
-  box-shadow: 0 0 5px 0 var(--foreground);
-}
-
-.register {
-  color: var(--background);
-  background-color: var(--foreground);
-  border: 1px solid var(--foreground);
-  border-radius: 5px;
-  padding: 5px 10px;
-}
-
-.register:hover {
-  box-shadow: 0 0 5px 0 var(--foreground);
-}

@@ -13,7 +13,8 @@ model Book {
   author  String
   price   Float
 
-  images  BookImage[]
+  images    BookImage[]
+  cartItems CartItem[]
 }
 
 model BookImage {
@@ -35,4 +36,26 @@ model User {
   email    String @unique
   password String
   role     Role   @default(USER)
+
+  cart Cart?
+}
+
+model Cart {
+  id     Int @id @default(autoincrement())
+  userId Int @unique
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model CartItem {
+  id       Int @id @default(autoincrement())
+  cartId   Int
+  bookId   Int
+  quantity Int
+
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, bookId])
 }

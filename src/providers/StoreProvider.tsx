@@ -5,13 +5,14 @@ import { Provider } from "react-redux"
 
 import { makeStore } from "@/lib/store"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
-import { hydrateCart } from "@/lib/features/cart/cartSlice"
+import { hydrateCart, setHydrated } from "@/lib/features/cart/cartSlice"
+import CartSync from "@/components/Cart/CartSync/CartSync"
 
 
 function CartPersistence() {
   const dispatch = useAppDispatch()
   const items = useAppSelector((state) => state.cart.items)
-  const [hydrated, setHydrated] = useState(false)
+  const [persistenceHydrated, setPersistenceHydrated] = useState(false)
 
   useEffect(() => {
     try {
@@ -27,15 +28,16 @@ function CartPersistence() {
     } catch {
       localStorage.removeItem("cart")
     } finally {
-      setHydrated(true)
+      dispatch(setHydrated())
+      setPersistenceHydrated(true)
     }
   }, [dispatch])
 
   useEffect(() => {
-    if (!hydrated) return
+    if (!persistenceHydrated) return
 
     localStorage.setItem("cart", JSON.stringify(items))
-  }, [items, hydrated])
+  }, [items, persistenceHydrated])
 
   return null
 }
@@ -51,6 +53,7 @@ export default function StoreProvider({
   return (
     <Provider store={store}>
       <CartPersistence />
+      <CartSync />
       {children}
     </Provider>
   )

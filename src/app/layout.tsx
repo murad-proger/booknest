@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import StoreProvider from "@/providers/StoreProvider";
+import { SessionProvider } from "next-auth/react";
 import Header from "@/components/Header/Header";
 
 const geistSans = Geist({
@@ -28,10 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <StoreProvider>
-          <Header />
-          {children}
-        </StoreProvider>
+        <SessionProvider>
+          <StoreProvider>
+            <Header />
+            {children}
+          </StoreProvider>
+        </SessionProvider>
       </body>
     </html>
   );
