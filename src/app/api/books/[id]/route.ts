@@ -1,9 +1,19 @@
 import { deleteBook, getBookById, updateBook } from "@/services/books"
+import { requireAdmin } from "@/lib/auth-utils";
 
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await requireAdmin();
+
+  if(!session) {
+    return Response.json(
+      {message: "Forbidden"},
+      {status: 403}
+    )
+  }
+
   try {
     const { id } = await params;
 
@@ -28,6 +38,15 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await requireAdmin();
+
+  if(!session) {
+    return Response.json(
+      {message: "Forbidden"},
+      {status: 403}
+    )
+  }
+
   try {
     const { id } = await params;
 

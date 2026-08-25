@@ -19,7 +19,10 @@ export async function getUsers() {
 
 export async function getUserById(id: number) {
   return prisma.user.findUnique({
-    where: { id }
+    where: { id },
+    omit: {
+      password: true,
+    },
   })
 }
 

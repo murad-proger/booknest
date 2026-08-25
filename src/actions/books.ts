@@ -1,7 +1,7 @@
 "use server"
 
 import { createBook, updateBook, deleteBook } from "@/services/books";
-import { bookSchema, updateBookServerSchema } from "@/lib/validation";
+import { bookSchema, updateBookServerSchema, bookIdSchema } from "@/lib/validation";
 import { z } from "zod";
 
 import { writeFile } from "fs/promises";
@@ -11,6 +11,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth-utils";
 
 interface BookFormErrors {
   title?: string;
@@ -54,6 +55,8 @@ function getFieldErrors(
 export async function createBookAction(
   formData: FormData
 ): Promise<FormActionResult> {
+  await requireAdmin();
+
   const result = bookSchema.safeParse({
     title: formData.get("title"),
     author: formData.get("author"),
@@ -111,6 +114,8 @@ export async function createBookAction(
 export async function updateBookAction(
   formData: FormData
 ): Promise<FormActionResult> {
+  await requireAdmin();
+
   const id = formData.get("id");
   const title = formData.get("title");
   const author = formData.get("author");
@@ -203,8 +208,26 @@ export async function updateBookAction(
 export async function deleteBookAction(
   id: number
 ): Promise<ActionResult> {
+  const session = await requireAdmin();
+
+  if (!session) {
+    return {
+      success: false,
+      error: "Forbidden",
+    };
+  }
+
+  const result = bookIdSchema.safeParse(id);
+
+  if (!result.success) {
+    return {
+      success: false,
+      error: "Invalid book ID",
+    };
+  }
+
   try {
-    await deleteBook(id);
+    await deleteBook(result.data);
 
     revalidatePath("/admin/books");
 
@@ -214,7 +237,7 @@ export async function deleteBookAction(
   } catch {
     return {
       success: false,
-      error: "Failed to delete book"
+      error: "Failed to delete book",
     };
   }
 }

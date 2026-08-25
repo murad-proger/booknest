@@ -1,4 +1,5 @@
 import { createBook, getBooks } from "@/services/books";
+import { requireAdmin } from "@/lib/auth-utils";
 
 export async function GET() {
   try {
@@ -20,6 +21,15 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const session = await requireAdmin();
+
+  if(!session) {
+    return Response.json(
+      {message: "Forbidden"},
+      {status: 403}
+    )
+  }
+
   try {
     const data = await request.json();
 
@@ -41,16 +51,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-/*
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-
-  const books = await getBooks({
-    search: searchParams.get("search") ?? undefined,
-    sort: searchParams.get("sort") ?? undefined,
-  });
-
-  return Response.json(books);
-}
-*/

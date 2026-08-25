@@ -5,6 +5,7 @@ import { deleteUser, getUserById, updateUser } from "@/services/users";
 import { updateUserServerSchema } from "@/lib/validation";
 import z from "zod";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth-utils";
 
 type DeleteActionResult = {
   success: boolean;
@@ -24,6 +25,8 @@ export type UpdateUserActionResult = {
 export async function deleteUserAction(
   id: number
 ): Promise<DeleteActionResult> {
+  await requireAdmin()
+
   try {
     await deleteUser(id);
 
@@ -43,6 +46,8 @@ export async function deleteUserAction(
 export async function UpdateUserAction(
   formData: FormData
 ): Promise<UpdateUserActionResult> {
+  await requireAdmin()
+
   const result = updateUserServerSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),

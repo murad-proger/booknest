@@ -68,3 +68,5 @@ export const updateUserServerSchema = z.object({
   ...userFields,
   id: z.coerce.number().int().positive(),
 });
+
+export const bookIdSchema = z.number().int().positive();
