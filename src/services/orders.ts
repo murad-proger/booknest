@@ -31,20 +31,20 @@ export async function createOrderFromCart() {
 
     const total = cart.items.reduce(
       (sum, item) =>
-        sum + item.book.price * item.quantity,
-      0
+        sum.add(item.book.price.mul(item.quantity)),
+      new Prisma.Decimal(0)
     );
 
     const order = await tx.order.create({
       data: {
         userId,
-        total: new Prisma.Decimal(total),
+        total: total,
         items: {
           create: cart.items.map((item) => ({
             bookId: item.bookId,
             title: item.book.title,
             quantity: item.quantity,
-            price: new Prisma.Decimal(item.book.price),
+            price: item.book.price,
           })),
         },
       },
