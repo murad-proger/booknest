@@ -76,8 +76,9 @@ model Order {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
-  user  User        @relation(fields: [userId], references: [id], onDelete: Restrict)
-  items OrderItem[]
+  user      User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  items     OrderItem[]
+  payments  Payment[]
 
   @@index([userId])
   @@index([status])
@@ -96,4 +97,33 @@ model OrderItem {
 
   @@index([orderId])
   @@index([bookId])
+}
+
+enum PaymentProvider {
+  STRIPE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                Int           @id @default(autoincrement())
+  orderId           Int
+  provider          PaymentProvider
+  providerPaymentId String?
+  amount            Decimal
+  currency          String
+  status            PaymentStatus @default(PENDING)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@unique([provider, providerPaymentId])
 }
