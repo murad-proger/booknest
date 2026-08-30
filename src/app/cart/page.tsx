@@ -10,6 +10,7 @@ import CartItemCard from "@/components/Cart/CartItemCard/CartItemCard";
 
 export default function CartPage() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const cartItems = useAppSelector((state) => state.cart.items);
 
@@ -45,6 +46,27 @@ export default function CartPage() {
 
   const isEmpty = cartItems.length === 0;
 
+  const handleCheckout = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create checkout session");
+      }
+
+      const data = await response.json();
+
+      window.location.href = data.session.url;
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className="cartPage">
       <h1>Cart</h1>
@@ -63,6 +85,14 @@ export default function CartPage() {
           <div className={styles.cartTotal}>
             <span>Total:</span>
             <strong>${total.toFixed(2)}</strong>
+            <button
+              style={{padding: '5px 20px', cursor: 'pointer'}}
+              type="button"
+              onClick={handleCheckout}
+              disabled={isLoading}
+            >
+              {isLoading ? "Processing..." : "Pay"}
+            </button>
           </div>
         </>
       )}
