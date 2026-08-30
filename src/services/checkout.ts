@@ -5,7 +5,7 @@ import { createOrderFromCart } from "@/services/orders";
 export async function createCheckoutSession() {
   const order = await createOrderFromCart();
 
-  const payment = await prisma.payment.create({
+  await prisma.payment.create({
     data: {
       orderId: order.id,
       provider: "STRIPE",
@@ -16,6 +16,10 @@ export async function createCheckoutSession() {
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
+
+    metadata: {
+      orderId: order.id.toString(),
+    },
 
     line_items: order.items.map((item) => ({
       price_data: {
@@ -32,7 +36,7 @@ export async function createCheckoutSession() {
     cancel_url: "http://localhost:3000/checkout/cancel",
   });
 
-  console.log('Session!!!: ', session);
+  console.log('Session: ', session);
 
   return {
     session,

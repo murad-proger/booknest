@@ -34,3 +34,19 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Stripe: локальный webhook
+
+Для проверки оплаты локально нужен `stripe listen`, который форвардит события с аккаунта Stripe на `/api/stripe/webhook`.
+
+⚠️ У аккаунта проекта включён **Stripe Sandbox** ("testing sandbox"), а не classic Test Mode. Обычный `stripe login` может залогинить CLI в другой аккаунт/сэндбокс — тогда события создаются у Stripe, но до локального листенера не доходят (платёж при этом "проходит", а статус в БД не обновляется).
+
+Поэтому **всегда** запускайте `listen` с явным `--api-key`, используя значение `STRIPE_SECRET_KEY` из `.env`:
+
+\`\`\`bash
+stripe listen --api-key <STRIPE_SECRET_KEY из .env> --forward-to localhost:3000/api/stripe/webhook
+\`\`\`
+
+После запуска команда напечатает `Your webhook signing secret is whsec_...` — вставьте это значение в `STRIPE_WEBHOOK_SECRET` в `.env` и перезапустите `npm run dev`.
+
+Тестовая карта: `4242 4242 4242 4242`, любой будущий срок, любой CVC.
