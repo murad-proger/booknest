@@ -62,6 +62,15 @@ export async function POST(request: Request) {
         orderId,
         paymentIntentId,
       });
+
+      await prisma.order.update({
+        where: {
+          id: Number(orderId),
+        },
+        data: {
+          status: "PAID",
+        },
+      });
     }
 
     return NextResponse.json({ received: true });
