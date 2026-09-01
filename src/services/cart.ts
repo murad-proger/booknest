@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/generated/prisma/client";
 
 type CartItemData = {
   id: number;
@@ -169,5 +170,52 @@ export async function updateCart(items: CartItemData[]) {
         items: true,
       },
     });
+  });
+}
+
+export async function clearCart() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const userId = Number(session.user.id);
+
+  const cart = await prisma.cart.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!cart) {
+    return;
+  }
+
+  await prisma.cartItem.deleteMany({
+    where: {
+      cartId: cart.id,
+    },
+  });
+}
+
+export async function clearCartByUserId(
+  userId: number,
+  tx: Prisma.TransactionClient = prisma
+) {
+  const cart = await tx.cart.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!cart) {
+    return;
+  }
+
+  await tx.cartItem.deleteMany({
+    where: {
+      cartId: cart.id,
+    },
   });
 }
