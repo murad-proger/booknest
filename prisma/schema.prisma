@@ -127,3 +127,12 @@ model Payment {
   @@index([status])
   @@unique([provider, providerPaymentId])
 }
+
+model WebhookEvent {
+  id        Int      @id @default(autoincrement())
+  provider  PaymentProvider
+  eventId   String
+  createdAt DateTime @default(now())
+
+  @@unique([provider, eventId])
+}
