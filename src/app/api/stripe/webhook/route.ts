@@ -141,6 +141,45 @@ export async function POST(request: Request) {
         });
       }
 
+      if (event.type === "checkout.session.expired") {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const orderId = session.metadata?.orderId;
+
+        if (!orderId) {
+          throw new Error("Missing orderId in session metadata");
+        }
+
+        const payment = await tx.payment.findFirst({
+          where: {
+            orderId: Number(orderId),
+            provider: "STRIPE",
+            status: "PENDING",
+          },
+        });
+
+        if (payment) {
+          await tx.payment.update({
+            where: {
+              id: payment.id,
+            },
+            data: {
+              status: "FAILED",
+            },
+          });
+        }
+
+        await tx.order.update({
+          where: {
+            id: Number(orderId),
+          },
+          data: {
+            status: "CANCELLED",
+          },
+        });
+
+        console.log("Order cancelled after session expiry:", { orderId });
+      }
+
       return true;
     });
 
