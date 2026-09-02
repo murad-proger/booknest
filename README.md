@@ -50,3 +50,5 @@ stripe listen --api-key <STRIPE_SECRET_KEY из .env> --forward-to localhost:300
 После запуска команда напечатает `Your webhook signing secret is whsec_...` — вставьте это значение в `STRIPE_WEBHOOK_SECRET` в `.env` и перезапустите `npm run dev`.
 
 Тестовая карта: `4242 4242 4242 4242`, любой будущий срок, любой CVC.
+
+Тестовая карта для проверки отказа (decline): `4000 0000 0000 0002`, любой будущий срок, любой CVC. Эмулирует `payment_intent.payment_failed` — используется для проверки failed payment flow (Payment → FAILED, Order остаётся PENDING)
