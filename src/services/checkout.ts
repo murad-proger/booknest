@@ -21,6 +21,12 @@ export async function createCheckoutSession() {
       orderId: order.id.toString(),
     },
 
+    payment_intent_data: {
+      metadata: {
+        orderId: order.id.toString(),
+      },
+    },
+
     line_items: order.items.map((item) => ({
       price_data: {
         currency: "azn",

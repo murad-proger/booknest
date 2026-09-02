@@ -105,6 +105,42 @@ export async function POST(request: Request) {
         });
       }
 
+      if (event.type === "payment_intent.payment_failed") {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const orderId = paymentIntent.metadata?.orderId;
+
+        if (!orderId) {
+          throw new Error("Missing orderId in payment_intent metadata");
+        }
+
+        const payment = await tx.payment.findFirst({
+          where: {
+            orderId: Number(orderId),
+            provider: "STRIPE",
+            status: "PENDING",
+          },
+        });
+
+        if (!payment) {
+          throw new Error("Payment not found");
+        }
+
+        await tx.payment.update({
+          where: {
+            id: payment.id,
+          },
+          data: {
+            providerPaymentId: paymentIntent.id,
+            status: "FAILED",
+          },
+        });
+
+        console.log("Payment marked FAILED:", {
+          orderId,
+          paymentIntentId: paymentIntent.id,
+        });
+      }
+
       return true;
     });
 
