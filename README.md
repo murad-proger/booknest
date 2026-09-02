@@ -51,4 +51,18 @@ stripe listen --api-key <STRIPE_SECRET_KEY из .env> --forward-to localhost:300
 
 Тестовая карта: `4242 4242 4242 4242`, любой будущий срок, любой CVC.
 
-Тестовая карта для проверки отказа (decline): `4000 0000 0000 0002`, любой будущий срок, любой CVC. Эмулирует `payment_intent.payment_failed` — используется для проверки failed payment flow (Payment → FAILED, Order остаётся PENDING)
+Тестовая карта для проверки отказа (decline): `4000 0000 0000 0002`, любой будущий срок, любой CVC. Эмулирует `payment_intent.payment_failed` — используется для проверки failed payment flow (Payment → FAILED, Order остаётся PENDING).
+
+### Проверка истечения сессии (checkout.session.expired)
+
+Ждать реальные 24 часа непрактично, а `expires_at` нельзя выставить меньше 30 минут через `sessions.create`. Вместо этого сессию можно принудительно "истечь" через Stripe API — это вызовет настоящее событие `checkout.session.expired` в локальном webhook:
+
+\`\`\`powershell
+curl.exe -u <STRIPE_SECRET_KEY>: https://api.stripe.com/v1/checkout/sessions/cs_test_XXXXXXXX/expire -X POST
+\`\`\`
+
+Замените `cs_test_XXXXXXXX` на `session.id` неоплаченной сессии (лог `createCheckoutSession()`), `<STRIPE_SECRET_KEY>` — на значение из `.env` с двоеточием в конце (Basic Auth без пароля).
+
+⚠️ В PowerShell используйте `curl.exe`, а не `curl` — обычный `curl` в PowerShell — это алиас `Invoke-WebRequest` с другим набором параметров (`-u` там неоднозначен).
+
+Ожидаемый результат: `Order → CANCELLED`, `Payment → FAILED` (если был `PENDING`; уже `FAILED` не трогается).
