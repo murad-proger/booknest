@@ -38,7 +38,7 @@ export async function createCheckoutSession() {
       quantity: item.quantity,
     })),
 
-    success_url: "http://localhost:3000/checkout/success",
+    success_url: "http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: "http://localhost:3000/checkout/cancel",
   });
 
