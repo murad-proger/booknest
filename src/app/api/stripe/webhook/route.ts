@@ -180,6 +180,14 @@ export async function POST(request: Request) {
         console.log("Order cancelled after session expiry:", { orderId });
       }
 
+      if (
+        event.type !== "checkout.session.completed" &&
+        event.type !== "payment_intent.payment_failed" &&
+        event.type !== "checkout.session.expired"
+      ) {
+        console.log("Unhandled Stripe event type:", event.type);
+      }
+
       return true;
     });
 
