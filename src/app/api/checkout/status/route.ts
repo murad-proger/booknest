@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     select: { id: true, status: true, userId: true },
   });
 
-  if (!order || order.userId !== session.user.id) {
+  if (!order || String(order.userId) !== String(session.user.id)) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
 
