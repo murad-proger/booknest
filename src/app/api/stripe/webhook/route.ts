@@ -180,10 +180,55 @@ export async function POST(request: Request) {
         console.log("Order cancelled after session expiry:", { orderId });
       }
 
+      if (event.type === "charge.refunded") {
+        const charge = event.data.object as Stripe.Charge;
+        const paymentIntentId = charge.payment_intent;
+
+        if (!paymentIntentId) {
+          throw new Error("Missing payment_intent in charge");
+        }
+
+        const payment = await tx.payment.findFirst({
+          where: {
+            provider: "STRIPE",
+            providerPaymentId: paymentIntentId as string,
+            status: "SUCCEEDED",
+          },
+        });
+
+        if (!payment) {
+          throw new Error("Payment not found for refund");
+        }
+
+        await tx.payment.update({
+          where: {
+            id: payment.id,
+          },
+          data: {
+            status: "REFUNDED",
+          },
+        });
+
+        await tx.order.update({
+          where: {
+            id: payment.orderId,
+          },
+          data: {
+            status: "REFUNDED",
+          },
+        });
+
+        console.log("Payment and Order marked REFUNDED:", {
+          orderId: payment.orderId,
+          paymentIntentId,
+        });
+      }
+
       if (
         event.type !== "checkout.session.completed" &&
         event.type !== "payment_intent.payment_failed" &&
-        event.type !== "checkout.session.expired"
+        event.type !== "checkout.session.expired" &&
+        event.type !== "charge.refunded"
       ) {
         console.log("Unhandled Stripe event type:", event.type);
       }

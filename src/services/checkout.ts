@@ -105,3 +105,26 @@ export async function createRetryCheckoutSession(orderId: number, userId: number
 
   return { session };
 }
+
+export async function refundPayment(orderId: number) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { payments: true },
+  });
+
+  if (!order) {
+    throw new Error("NOT_FOUND");
+  }
+
+  const succeededPayment = order.payments.find((p) => p.status === "SUCCEEDED");
+
+  if (!succeededPayment || !succeededPayment.providerPaymentId) {
+    throw new Error("NOT_REFUNDABLE");
+  }
+
+  const refund = await stripe.refunds.create({
+    payment_intent: succeededPayment.providerPaymentId,
+  });
+
+  return { refund };
+}
