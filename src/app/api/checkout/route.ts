@@ -7,6 +7,10 @@ export async function POST() {
 
     return NextResponse.json(session);
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
     console.error(error);
 
     return NextResponse.json(

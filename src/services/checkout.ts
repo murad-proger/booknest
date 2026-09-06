@@ -31,8 +31,6 @@ export async function createCheckoutSession() {
     data: { checkoutSessionId: session.id },
   });
 
-  console.log("Session: ", session);
-
   return { session };
 }
 
