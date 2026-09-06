@@ -77,9 +77,10 @@ export async function POST(request: Request) {
           throw new Error("Payment not found");
         }
 
-        await tx.payment.update({
+        const paymentResult = await tx.payment.updateMany({
           where: {
             id: payment.id,
+            status: "PENDING",
           },
           data: {
             providerPaymentId: paymentIntentId as string,
@@ -87,14 +88,23 @@ export async function POST(request: Request) {
           },
         });
 
-        await tx.order.update({
+        if (paymentResult.count === 0) {
+          throw new Error("Payment status changed before it could be marked SUCCEEDED");
+        }
+
+        const orderResult = await tx.order.updateMany({
           where: {
             id: Number(orderId),
+            status: "PENDING",
           },
           data: {
             status: "PAID",
           },
         });
+
+        if (orderResult.count === 0) {
+          throw new Error("Order status changed before it could be marked PAID");
+        }
 
         await clearCartByUserId(order.userId, tx);
 
@@ -125,15 +135,22 @@ export async function POST(request: Request) {
           throw new Error("Payment not found");
         }
 
-        await tx.payment.update({
+        const paymentResult = await tx.payment.updateMany({
           where: {
             id: payment.id,
+            status: "PENDING",
           },
           data: {
             providerPaymentId: paymentIntent.id,
             status: "FAILED",
           },
         });
+
+        if (paymentResult.count === 0) {
+          console.log("Payment was not marked FAILED (status changed):", {
+            paymentId: payment.id,
+          });
+        }
 
         console.log("Payment marked FAILED:", {
           orderId,
@@ -158,26 +175,38 @@ export async function POST(request: Request) {
         });
 
         if (payment) {
-          await tx.payment.update({
+          const paymentResult = await tx.payment.updateMany({
             where: {
               id: payment.id,
+              status: "PENDING",
             },
             data: {
               status: "FAILED",
             },
           });
+
+          if (paymentResult.count === 0) {
+            console.log("Payment was not marked FAILED (status changed):", {
+              paymentId: payment.id,
+            });
+          }
         }
 
-        await tx.order.update({
+        const result = await tx.order.updateMany({
           where: {
             id: Number(orderId),
+            status: "PENDING",
           },
           data: {
             status: "CANCELLED",
           },
         });
 
-        console.log("Order cancelled after session expiry:", { orderId });
+        if (result.count === 0) {
+          console.log("Order was not cancelled:", { orderId });
+        } else {
+          console.log("Order cancelled after session expiry:", { orderId });
+        }
       }
 
       if (event.type === "charge.refunded") {
@@ -200,23 +229,33 @@ export async function POST(request: Request) {
           throw new Error("Payment not found for refund");
         }
 
-        await tx.payment.update({
+        const paymentResult = await tx.payment.updateMany({
           where: {
             id: payment.id,
+            status: "SUCCEEDED",
           },
           data: {
             status: "REFUNDED",
           },
         });
 
-        await tx.order.update({
+        if (paymentResult.count === 0) {
+          throw new Error("Payment status changed before it could be marked REFUNDED");
+        }
+
+        const orderResult = await tx.order.updateMany({
           where: {
             id: payment.orderId,
+            status: "PAID",
           },
           data: {
             status: "REFUNDED",
           },
         });
+
+        if (orderResult.count === 0) {
+          throw new Error("Order status changed before it could be marked REFUNDED");
+        }
 
         console.log("Payment and Order marked REFUNDED:", {
           orderId: payment.orderId,
