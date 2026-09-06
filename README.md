@@ -43,9 +43,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 Поэтому **всегда** запускайте `listen` с явным `--api-key`, используя значение `STRIPE_SECRET_KEY` из `.env`:
 
-\`\`\`bash
+```bash
 stripe listen --api-key <STRIPE_SECRET_KEY из .env> --forward-to localhost:3000/api/stripe/webhook
-\`\`\`
+```
 
 После запуска команда напечатает `Your webhook signing secret is whsec_...` — вставьте это значение в `STRIPE_WEBHOOK_SECRET` в `.env` и перезапустите `npm run dev`.
 
@@ -57,12 +57,26 @@ stripe listen --api-key <STRIPE_SECRET_KEY из .env> --forward-to localhost:300
 
 Ждать реальные 24 часа непрактично, а `expires_at` нельзя выставить меньше 30 минут через `sessions.create`. Вместо этого сессию можно принудительно "истечь" через Stripe API — это вызовет настоящее событие `checkout.session.expired` в локальном webhook:
 
-\`\`\`powershell
+```powershell
 curl.exe -u <STRIPE_SECRET_KEY>: https://api.stripe.com/v1/checkout/sessions/cs_test_XXXXXXXX/expire -X POST
-\`\`\`
+```
 
 Замените `cs_test_XXXXXXXX` на `session.id` неоплаченной сессии (лог `createCheckoutSession()`), `<STRIPE_SECRET_KEY>` — на значение из `.env` с двоеточием в конце (Basic Auth без пароля).
 
 ⚠️ В PowerShell используйте `curl.exe`, а не `curl` — обычный `curl` в PowerShell — это алиас `Invoke-WebRequest` с другим набором параметров (`-u` там неоднозначен).
 
 Ожидаемый результат: `Order → CANCELLED`, `Payment → FAILED` (если был `PENDING`; уже `FAILED` не трогается).
+
+### Payment retry (повторная попытка оплаты)
+
+`POST /api/orders/[orderId]/retry` позволяет повторить оплату для Order, который ещё в статусе `PENDING` (например, после card decline).
+
+Логика (`createRetryCheckoutSession` в `src/services/checkout.ts`):
+
+- если у Order уже есть `PENDING` Payment с активной (`open`) Checkout Session — возвращается **та же** `session.url`, новый Payment не создаётся;
+- если у `PENDING` Payment сессия оказалась не `open` (`expired`/`complete`) — этот Payment переводится в `FAILED`, после чего создаётся новый `Payment` и новая Checkout Session;
+- если Order не в статусе `PENDING` — `409 Order is not retryable`.
+
+⚠️ На практике вторая ветка (перевод "протухшего" Payment в `FAILED`) почти никогда не срабатывает: обычно webhook `checkout.session.expired` успевает перевести весь Order в `CANCELLED` раньше, чем пользователь вызовет retry, и retry блокируется на проверке статуса Order (`409`). Ветка остаётся в коде ради редкого race condition — запрос на retry делает `stripe.checkout.sessions.retrieve()` напрямую к Stripe и может увидеть `expired` раньше, чем локальный webhook успеет обработать событие `checkout.session.expired`.
+
+Проверено вручную через `stripe checkout sessions expire <session_id> --api-key <STRIPE_SECRET_KEY>` (Stripe CLI) — после expire webhook переводит Order → CANCELLED, Payment → FAILED, и повторный retry на этом Order корректно возвращает `409`.
