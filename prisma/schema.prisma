@@ -115,6 +115,7 @@ model Payment {
   orderId           Int
   provider          PaymentProvider
   providerPaymentId String?
+  checkoutSessionId String?
   amount            Decimal
   currency          String
   status            PaymentStatus @default(PENDING)
@@ -125,6 +126,7 @@ model Payment {
 
   @@index([orderId])
   @@index([status])
+  @@index([checkoutSessionId])
   @@unique([provider, providerPaymentId])
 }
 
