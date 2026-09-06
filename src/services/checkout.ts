@@ -2,6 +2,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { createOrderFromCart } from "@/services/orders";
+import Stripe from "stripe";
 
 export async function createCheckoutSession() {
   const order = await createOrderFromCart();
@@ -120,9 +121,39 @@ export async function refundPayment(orderId: number) {
     throw new Error("NOT_REFUNDABLE");
   }
 
-  const refund = await stripe.refunds.create({
-    payment_intent: succeededPayment.providerPaymentId,
+  const locked = await prisma.payment.updateMany({
+    where: { id: succeededPayment.id, status: "SUCCEEDED" },
+    data: { status: "REFUND_PENDING" },
   });
 
-  return { refund };
+  if (locked.count === 0) {
+    throw new Error("NOT_REFUNDABLE");
+  }
+
+  try {
+    const refund = await stripe.refunds.create({
+      payment_intent: succeededPayment.providerPaymentId,
+    });
+
+    return { refund };
+    } catch (error) {
+    const isAlreadyRefunded =
+      error instanceof Stripe.errors.StripeInvalidRequestError &&
+      error.code === "charge_already_refunded";
+
+    if (isAlreadyRefunded) {
+      /*
+       Уже возвращено на стороне Stripe (например, из Dashboard).
+        Оставляем REFUND_PENDING — webhook charge.refunded сам переведёт в REFUNDED.
+       */
+      throw new Error("ALREADY_REFUNDED");
+    }
+
+    await prisma.payment.updateMany({
+      where: { id: succeededPayment.id, status: "REFUND_PENDING" },
+      data: { status: "SUCCEEDED" },
+    });
+
+    throw error;
+  }
 }

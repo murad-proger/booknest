@@ -109,6 +109,7 @@ enum PaymentStatus {
   SUCCEEDED
   FAILED
   REFUNDED
+  REFUND_PENDING
 }
 
 model Payment {

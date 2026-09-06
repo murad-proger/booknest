@@ -31,6 +31,13 @@ export async function POST(
       );
     }
 
+    if (error instanceof Error && error.message === "ALREADY_REFUNDED") {
+      return NextResponse.json(
+        { error: "Payment was already refunded" },
+        { status: 409 }
+      );
+    }
+
     console.error(error);
     return NextResponse.json({ error: "Refund failed" }, { status: 500 });
   }

@@ -89,7 +89,9 @@ export async function POST(request: Request) {
         });
 
         if (paymentResult.count === 0) {
-          throw new Error("Payment status changed before it could be marked SUCCEEDED");
+          throw new Error(
+            "Payment status changed before it could be marked SUCCEEDED",
+          );
         }
 
         const orderResult = await tx.order.updateMany({
@@ -103,7 +105,9 @@ export async function POST(request: Request) {
         });
 
         if (orderResult.count === 0) {
-          throw new Error("Order status changed before it could be marked PAID");
+          throw new Error(
+            "Order status changed before it could be marked PAID",
+          );
         }
 
         await clearCartByUserId(order.userId, tx);
@@ -221,7 +225,7 @@ export async function POST(request: Request) {
           where: {
             provider: "STRIPE",
             providerPaymentId: paymentIntentId as string,
-            status: "SUCCEEDED",
+            status: { in: ["SUCCEEDED", "REFUND_PENDING"] },
           },
         });
 
@@ -232,7 +236,7 @@ export async function POST(request: Request) {
         const paymentResult = await tx.payment.updateMany({
           where: {
             id: payment.id,
-            status: "SUCCEEDED",
+            status: payment.status,
           },
           data: {
             status: "REFUNDED",
@@ -240,7 +244,9 @@ export async function POST(request: Request) {
         });
 
         if (paymentResult.count === 0) {
-          throw new Error("Payment status changed before it could be marked REFUNDED");
+          throw new Error(
+            "Payment status changed before it could be marked REFUNDED",
+          );
         }
 
         const orderResult = await tx.order.updateMany({
@@ -254,7 +260,9 @@ export async function POST(request: Request) {
         });
 
         if (orderResult.count === 0) {
-          throw new Error("Order status changed before it could be marked REFUNDED");
+          throw new Error(
+            "Order status changed before it could be marked REFUNDED",
+          );
         }
 
         console.log("Payment and Order marked REFUNDED:", {
