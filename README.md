@@ -80,3 +80,19 @@ curl.exe -u <STRIPE_SECRET_KEY>: https://api.stripe.com/v1/checkout/sessions/cs_
 ⚠️ На практике вторая ветка (перевод "протухшего" Payment в `FAILED`) почти никогда не срабатывает: обычно webhook `checkout.session.expired` успевает перевести весь Order в `CANCELLED` раньше, чем пользователь вызовет retry, и retry блокируется на проверке статуса Order (`409`). Ветка остаётся в коде ради редкого race condition — запрос на retry делает `stripe.checkout.sessions.retrieve()` напрямую к Stripe и может увидеть `expired` раньше, чем локальный webhook успеет обработать событие `checkout.session.expired`.
 
 Проверено вручную через `stripe checkout sessions expire <session_id> --api-key <STRIPE_SECRET_KEY>` (Stripe CLI) — после expire webhook переводит Order → CANCELLED, Payment → FAILED, и повторный retry на этом Order корректно возвращает `409`.
+
+### Refund (возврат оплаты)
+
+`POST /api/orders/[orderId]/refund` — admin-only endpoint (проверка через `requireAdmin()` из `src/lib/auth-utils.ts`), инициирует возврат уже успешно оплаченного заказа.
+
+Логика (`refundPayment` в `src/services/checkout.ts`):
+
+- находит у Order платёж со статусом `SUCCEEDED`;
+- вызывает `stripe.refunds.create({ payment_intent: payment.providerPaymentId })`;
+- **не изменяет БД напрямую** — как и с оплатой, источником истины остаётся Stripe webhook.
+
+Webhook обрабатывает событие **`charge.refunded`** (а не `refund.updated`/`refund.created`): для обычных синхронных card-рефандов именно `charge.refunded` — надёжный триггер, тогда как `refund.updated` предназначен в первую очередь для асинхронных возвратов (например, банковские переводы). `charge.refunded` возвращает объект `Charge`, из которого берётся `payment_intent` — по нему находится локальный `Payment` (`providerPaymentId`), который вместе с `Order` переводится в `REFUNDED`.
+
+⚠️ На один вызов `stripe.refunds.create()` Stripe в реальности присылает **несколько** событий: `refund.created`, `charge.refunded`, `refund.updated`, `charge.refund.updated`. Обрабатывается только `charge.refunded` — остальные три логируются как unhandled и не вызывают побочных эффектов благодаря существующей `WebhookEvent` idempotency (каждое имеет свой уникальный `eventId`, но веток бизнес-логики для них нет).
+
+Проверено вручную: `POST /api/orders/[orderId]/refund` на оплаченном заказе → `200 { refundId, status: "succeeded" }` → в логах `stripe listen` видно все четыре события → после обработки `charge.refunded` в БД `Order.status = REFUNDED` и `Payment.status = REFUNDED`.
