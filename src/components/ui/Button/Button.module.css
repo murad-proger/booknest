@@ -1,0 +1,83 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-ui), sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-control);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.primary {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-accent-strong);
+  color: var(--color-on-accent);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--color-accent);
+}
+
+.primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60px;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  opacity: 0;
+}
+
+.primary:hover:not(:disabled)::before {
+  animation: shine 0.6s ease-out;
+  opacity: 1;
+}
+
+@keyframes shine {
+  from { left: -60px; }
+  to { left: 140%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary::before {
+    display: none;
+  }
+}
+
+.secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-disabled);
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: var(--color-text);
+  color: var(--color-surface);
+}
+
+.danger {
+  background-color: var(--color-danger);
+  color: var(--color-surface);
+}
+
+.danger:hover:not(:disabled) {
+  filter: brightness(0.9);
+}

@@ -1,0 +1,27 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-control);
+  padding: var(--space-1) var(--space-3);
+  color: var(--color-surface);
+}
+
+.accent {
+  background-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.success {
+  background-color: var(--color-success);
+}
+
+.danger {
+  background-color: var(--color-danger);
+}
+
+.disabled {
+  background-color: var(--color-disabled);
+}
