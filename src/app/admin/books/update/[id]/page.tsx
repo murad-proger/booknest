@@ -17,7 +17,7 @@ export default async function AdminBookUpdatePage ({params}: Props) {
   return (
     <>
       <h1>Update book</h1>
-      <UpdateBookForm book={book} />
+      <UpdateBookForm book={{ ...book, price: book.price.toNumber() }} />
     </>
   )
 }
