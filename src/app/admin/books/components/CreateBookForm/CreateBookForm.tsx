@@ -2,11 +2,12 @@
 
 import styles from "./CreateBookForm.module.css";
 
+import z from "zod";
 import { createBookAction } from "@/actions/books";
 import { bookSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import z from "zod";
+import Button from "@/components/ui/Button/Button";
 
 type FormValues = z.output<typeof bookSchema>
 
@@ -120,9 +121,9 @@ export default function CreateBookForm() {
         />
       </label>
 
-      <button type="submit" disabled={isSubmitting}>
+      <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Creating..." : "Create"}
-      </button>
+      </Button>
     </form>
   );
 }

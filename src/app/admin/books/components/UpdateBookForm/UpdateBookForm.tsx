@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 import  { updateBookAction } from "@/actions/books"
 import { updateBookClientSchema, type UpdateBookFormData } from "@/lib/validation"
+import Button from "@/components/ui/Button/Button"
 
 type Book = UpdateBookFormData & {
   images: { id: number; url: string; }[];
@@ -159,9 +160,9 @@ export default function UpdateBookForm ({book}: Props) {
         name="deletedImageIds"
         value={JSON.stringify(deletedImageIds)}
       />
-      <button type="submit" disabled={isSubmitting}>
+      <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Updating...' : 'Update'}
-      </button>
+      </Button>
     </form>
   )
 }

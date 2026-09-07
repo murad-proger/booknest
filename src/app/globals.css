@@ -8,6 +8,7 @@
   --color-danger: #F04053;
   --color-success: #6B7C3F;
   --color-disabled: #A19C8A;
+  --color-on-accent: #2E260C;
 
   --radius-control: 5px;
   --radius-media: 24px;
@@ -32,7 +33,6 @@
     --color-danger: #FF6B7A;
     --color-success: #8FA35C;
     --color-disabled: #6E6656;
-    --color-on-accent: #2E260C;
   }
 }
 

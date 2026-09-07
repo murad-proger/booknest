@@ -1,15 +1,16 @@
-import styles from "./adminBookCard.module.css";
-
-import Link from "next/link";
 import Image from "next/image";
 
+import styles from "./adminBookCard.module.css";
+
+import LinkButton from "@/components/ui/LinkButton/LinkButton";
 import DeleteBookButton from "../DeleteBookButton/DeleteBookButton";
+import { Prisma } from "@/generated/prisma/client";
 
 type BookData = {
   id: number;
   title: string;
   author: string;
-  price: number;
+  price: Prisma.Decimal;
   images: {
     id: number;
     url: string;
@@ -34,21 +35,16 @@ export default function AdminBookCard({ book }: AdminBookCardProps) {
       />
 
       <div className={styles.content}>
-        <div className={styles.title}>
-          <strong>Title:</strong> {title}
-        </div>
-
-        <div className={styles.author}>
-          <strong>Author:</strong> {author}
-        </div>
-
-        <div className={styles.price}>
-          <strong>Price:</strong> ${price}
-        </div>
+        <div className={styles.title}><strong>Title:</strong> {title}</div>
+        <div className={styles.author}><strong>Author:</strong> {author}</div>
+        <div className={styles.price}><strong>Price:</strong> ${price.toString()}</div>
       </div>
+
       <div className={styles.bottom}>
         <DeleteBookButton id={id} />
-        <Link className={styles.updateButton} href={`/admin/books/update/${id}`}>Update</Link>
+        <LinkButton variant="secondary" href={`/admin/books/update/${id}`}>
+          Update
+        </LinkButton>
       </div>
     </div>
   );

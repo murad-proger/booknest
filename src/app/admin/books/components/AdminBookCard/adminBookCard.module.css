@@ -1,65 +1,32 @@
 .book {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 
   width: 220px;
-  padding: 16px;
+  padding: var(--space-4);
 
-  border: 1px solid var(--foreground);
-  border-radius: 10px;
-  background: var(--background);
+  border: 1px solid var(--color-disabled);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
 }
 
 .image {
   width: 120px;
   height: 180px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   align-self: center;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: auto;
+  gap: var(--space-2);
 }
 
 .bottom {
   display: flex;
   justify-content: space-between;
   margin-top: auto;
-}
-
-.updateButton {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 8px 14px;
-
-  border-radius: 6px;
-  background-color: #2563eb;
-  color: #fff;
-
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.updateButton:hover {
-  background-color: #1d4ed8;
-}
-
-.updateButton:active {
-  background-color: #1e40af;
 }

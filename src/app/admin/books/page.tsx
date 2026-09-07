@@ -1,8 +1,8 @@
 import { getBooks } from "@/services/books";
-import styles from "./adminBooksPage.module.css";
 
-import Link from "next/link";
+import LinkButton from "@/components/ui/LinkButton/LinkButton";
 import AdminBookCard from "./components/AdminBookCard/AdminBookCard";
+import styles from "./adminBooksPage.module.css";
 
 export default async function AdminBooksPage() {
   const books = await getBooks();
@@ -10,7 +10,9 @@ export default async function AdminBooksPage() {
   return (
     <>
       <h1>Admin books</h1>
-      <Link className={styles.button} href={"/admin/books/create"}>Create a new book</Link>
+      <LinkButton href="/admin/books/create" className={styles.createButton}>
+        Create a new book
+      </LinkButton>
       <section className={styles.booksSection}>
         {books.map((book) => <AdminBookCard book={book} key={book.id} />)}
       </section>
