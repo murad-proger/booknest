@@ -1,0 +1,16 @@
+.card {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.storefront {
+  border-radius: var(--radius-media);
+  padding: var(--space-6);
+  border: none;
+}
+
+.admin {
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-disabled);
+}

@@ -1,5 +1,6 @@
 import { getOrdersForUser } from "@/services/orders";
 import RetryPaymentButton from "@/components/Orders/RetryPaymentButton/RetryPaymentButton";
+import OrderCard from "@/components/ui/Card/OrderCard";
 
 export default async function OrdersPage() {
   const orders = await getOrdersForUser();
@@ -12,17 +13,19 @@ export default async function OrdersPage() {
         <p>No orders yet</p>
       ) : (
         orders.map((order) => (
-          <div key={order.id}>
-            <p>Order #{order.id} — {order.status} — ${order.total.toString()}</p>
-            <ul>
-              {order.items.map((item) => (
-                <li key={item.id}>
-                  {item.title} × {item.quantity}
-                </li>
-              ))}
-            </ul>
-            {order.status === "PENDING" && <RetryPaymentButton orderId={order.id} />}
-          </div>
+          <OrderCard
+            key={order.id}
+            variant="storefront"
+            orderId={order.id}
+            status={order.status}
+            total={order.total.toString()}
+            items={order.items}
+            action={
+              order.status === "PENDING" && (
+                <RetryPaymentButton orderId={order.id} />
+              )
+            }
+          />
         ))
       )}
     </main>
