@@ -1,19 +1,19 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto_Flex, Inter } from "next/font/google";
 import StoreProvider from "@/providers/StoreProvider";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/Header/Header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const robotoFlex = Roboto_Flex({
+  variable: "--font-content",
+  subsets: ["latin", "cyrillic"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const inter = Inter({
+  variable: "--font-ui",
+  subsets: ["latin", "cyrillic"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${robotoFlex.variable} ${inter.variable}`}>
       <body>
         <SessionProvider>
           <StoreProvider>
