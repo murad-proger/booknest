@@ -56,3 +56,17 @@ export async function createOrderFromCart() {
     return order;
   });
 }
+
+export async function getOrdersForUser() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  return prisma.order.findMany({
+    where: { userId: Number(session.user.id) },
+    include: { items: true, payments: true },
+    orderBy: { createdAt: "desc" },
+  });
+}
