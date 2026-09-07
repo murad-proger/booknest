@@ -70,3 +70,10 @@ export async function getOrdersForUser() {
     orderBy: { createdAt: "desc" },
   });
 }
+
+export async function getAllOrders() {
+  return prisma.order.findMany({
+    include: { items: true, payments: true, user: { select: { email: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+}

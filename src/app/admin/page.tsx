@@ -18,6 +18,9 @@ export default function AdminPage () {
         >
           Manage users
         </Link>
+        <Link href={'/admin/orders'} className={styles.link}>
+          Manage orders
+        </Link>
       </section>
     </>
   )
