@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Button from "@/components/ui/Button/Button";
 
 export default function RefundButton({ orderId }: { orderId: number }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,8 +37,8 @@ export default function RefundButton({ orderId }: { orderId: number }) {
   };
 
   return (
-    <button type="button" onClick={handleRefund} disabled={isLoading}>
+    <Button variant="danger" onClick={handleRefund} disabled={isLoading}>
       {isLoading ? "Processing..." : "Refund"}
-    </button>
+    </Button>
   );
 }

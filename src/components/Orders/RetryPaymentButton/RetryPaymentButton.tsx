@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Button from "@/components/ui/Button/Button";
 
 export default function RetryPaymentButton({ orderId }: { orderId: number }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,8 +28,8 @@ export default function RetryPaymentButton({ orderId }: { orderId: number }) {
   };
 
   return (
-    <button type="button" onClick={handleRetry} disabled={isLoading}>
+    <Button variant="primary" onClick={handleRetry} disabled={isLoading}>
       {isLoading ? "Processing..." : "Retry payment"}
-    </button>
+    </Button>
   );
 }
