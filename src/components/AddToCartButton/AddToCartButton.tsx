@@ -1,7 +1,6 @@
 "use client"
 
-import styles from "./AddToCartButton.module.css"
-
+import Button from "@/components/ui/Button/Button"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { addToCart } from "@/lib/features/cart/cartSlice"
 
@@ -17,13 +16,8 @@ export default function AddToCartButton({ id }: { id: number }) {
   }
 
   return (
-    <button
-      className={styles.button}
-      onClick={handleClick}
-      type="button"
-      disabled={isInCart}
-    >
+    <Button type="button" onClick={handleClick} disabled={isInCart}>
       {isInCart ? "Added" : "Add to cart"}
-    </button>
+    </Button>
   )
 }

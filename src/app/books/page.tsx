@@ -32,7 +32,7 @@ export default async function BooksPage({
   return (
     <div className={styles.bookPage}>
       <h1>
-        BoksPage
+        BooksPage
       </h1>
       <SearchInput />
       <div className={styles.content}>

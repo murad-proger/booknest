@@ -1,7 +1,7 @@
 .filterAuthors {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
+  row-gap: var(--space-2);
   max-height: 200px;
   border: none;
   overflow-y: auto;
@@ -10,14 +10,14 @@
 }
 
 .filterAuthors legend {
-  margin-bottom: 10px;
+  margin-bottom: var(--space-2);
   font-weight: 500;
 }
 
 .authorItem {
   display: flex;
   align-items: center;
-  column-gap: 8px;
+  column-gap: var(--space-2);
   cursor: pointer;
 }
 

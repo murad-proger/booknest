@@ -2,6 +2,7 @@ import styles from "./BookCard.module.css";
 
 import type { Prisma } from "@/generated/prisma/client";
 import Image from "next/image";
+import Card from "@/components/ui/Card/Card";
 import AddToCartButton from "../AddToCartButton/AddToCartButton";
 
 type Props = {
@@ -14,7 +15,7 @@ type Props = {
 
 export default function BookCard({ book }: Props) {
   return (
-    <article className={styles.card}>
+    <Card variant="storefront" className={styles.card}>
       <Image
         className={styles.image}
         src={book.images ? book.images[0].url : "/images/no-book-cover.jpg"}
@@ -35,6 +36,6 @@ export default function BookCard({ book }: Props) {
           <AddToCartButton id={book.id} />
         </div>
       </div>
-    </article>
+    </Card>
   );
 }

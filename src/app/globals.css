@@ -9,6 +9,7 @@
   --color-success: #6B7C3F;
   --color-disabled: #A19C8A;
   --color-on-accent: #2E260C;
+  --color-shadow: rgb(0 0 0 / 12%);
 
   --radius-control: 5px;
   --radius-media: 24px;
@@ -33,6 +34,7 @@
     --color-danger: #FF6B7A;
     --color-success: #8FA35C;
     --color-disabled: #6E6656;
+    --color-shadow: rgb(255 255 255 / 10%);
   }
 }
 

@@ -1,15 +1,15 @@
 .bookPage {
-  margin-top: 20px;
+  margin-top: var(--space-5);
 }
 
 .content {
   display: flex;
   align-items: flex-start;
-  gap: 30px;
+  gap: var(--space-7);
 }
 
 .booksSection {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: var(--space-5);
 }
