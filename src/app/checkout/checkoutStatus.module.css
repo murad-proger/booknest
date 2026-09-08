@@ -1,0 +1,22 @@
+.wrapper {
+  max-width: 480px;
+  margin: var(--space-7) auto;
+  text-align: center;
+}
+
+.wrapper p {
+  margin-top: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.success {
+  color: var(--color-success);
+}
+
+.pending {
+  color: var(--color-accent);
+}
+
+.error {
+  color: var(--color-danger);
+}

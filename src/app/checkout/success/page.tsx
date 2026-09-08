@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import styles from "../checkoutStatus.module.css";
+import Card from "@/components/ui/Card/Card";
 
 type Status = "PENDING" | "PAID" | "CANCELLED" | "ERROR";
 
@@ -52,26 +54,32 @@ export default function SuccessPage() {
 
   if (status === "PAID") {
     return (
-      <main>
-        <h1>Payment successful</h1>
-        <p>Thank you for your purchase.</p>
+      <main className={styles.wrapper}>
+        <Card variant="storefront">
+          <h1 className={styles.success}>Payment successful</h1>
+          <p>Thank you for your purchase.</p>
+        </Card>
       </main>
     );
   }
 
   if (status === "PENDING") {
     return (
-      <main>
-        <h1>Confirming your payment...</h1>
-        <p>This usually takes just a few seconds.</p>
+      <main className={styles.wrapper}>
+        <Card variant="storefront">
+          <h1 className={styles.pending}>Confirming your payment...</h1>
+          <p>This usually takes just a few seconds.</p>
+        </Card>
       </main>
     );
   }
 
   return (
-    <main>
-      <h1>Something went wrong</h1>
-      <p>We couldn&apos;t confirm your payment. Please contact support.</p>
+    <main className={styles.wrapper}>
+      <Card variant="storefront">
+        <h1 className={styles.error}>Something went wrong</h1>
+        <p>We couldn&apos;t confirm your payment. Please contact support.</p>
+      </Card>
     </main>
   );
 }
