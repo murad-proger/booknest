@@ -1,14 +1,13 @@
 "use client"
 
-import styles from "./DeleteUserButton.module.css"
-
+import Button from "@/components/ui/Button/Button"
 import { deleteUserAction } from "@/actions/users"
 
 export default function DeleteUserButton({ id }: { id: number }) {
-  const handleDelete = async (id: number) => {
+  const handleDelete = async () => {
     const confirmed = confirm("Are you sure you that want to delete this user?")
 
-    if(!confirmed) return false
+    if (!confirmed) return
 
     const result = await deleteUserAction(id)
 
@@ -18,11 +17,8 @@ export default function DeleteUserButton({ id }: { id: number }) {
   }
 
   return (
-    <button
-      className={styles.deleteButton}
-      onClick={() => {handleDelete(id)}}
-    >
+    <Button variant="danger" onClick={handleDelete}>
       Delete
-    </button>
+    </Button>
   )
 }

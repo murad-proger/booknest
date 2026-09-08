@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateUserAction } from "@/actions/users";
 import { updateUserClientSchema } from "@/lib/validation";
+import Button from "@/components/ui/Button/Button";
 
 type FormValues = z.output<typeof updateUserClientSchema>
 
@@ -125,9 +126,9 @@ export default function UpdateUserForm({ user }: Props) {
         }
       </fieldset>
       <input type="hidden" name="id" value={id} />
-      <button type="submit">
+      <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Updating...' : 'Update'}
-      </button>
+      </Button>
     </form>
   );
 }

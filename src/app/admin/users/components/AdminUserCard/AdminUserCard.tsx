@@ -1,6 +1,7 @@
-import Link from "next/link";
-import DeleteUserButton from "../DeleteUserButton/DeleteUserButton";
 import styles from "./AdminUserCard.module.css"
+
+import LinkButton from "@/components/ui/LinkButton/LinkButton";
+import DeleteUserButton from "../DeleteUserButton/DeleteUserButton";
 
 type Props = {
   user: {
@@ -27,7 +28,9 @@ export default function AdminUserCard({user}: Props) {
         <dd>{role}</dd>
       </dl>
       <div className={styles.buttons}>
-        <Link className={styles.updateButton} href={`/admin/users/update/${id}`}>Update</Link>
+        <LinkButton variant="secondary" href={`/admin/users/update/${id}`}>
+          Update
+        </LinkButton>
         <DeleteUserButton id={id} />
       </div>
     </article>
