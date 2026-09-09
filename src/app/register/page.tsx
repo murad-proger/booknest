@@ -4,6 +4,7 @@ import styles from "./register.module.css"
 
 import { register, type RegisterState } from "@/actions/auth";
 import { useActionState } from "react";
+import Button from "@/components/ui/Button/Button";
 
 export default function RegisterPage() {
   const initialState: RegisterState = {errors: {}}
@@ -12,7 +13,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <h1>Registration page</h1>
+      <h1 className={styles.title}>Registration page</h1>
 
       <form className={styles.form} action={action}>
         <label className={styles.field}>
@@ -33,9 +34,9 @@ export default function RegisterPage() {
           {state.errors.password && <p className="fieldError">{state.errors.password[0]}</p>}
         </label>
 
-        <button className={styles.button} disabled={isPending}>
+        <Button className={styles.button}>
           {isPending ? 'Sending...' : 'Send'}
-        </button>
+        </Button>
       </form>
     </>
   )

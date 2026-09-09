@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { login, type LoginState } from "@/actions/auth";
+import Button from "@/components/ui/Button/Button";
 
 export default function LoginPage() {
   const initialState: LoginState = {
@@ -34,7 +35,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <h1>Login page</h1>
+      <h1 className={styles.title}>Login page</h1>
 
       <form className={styles.form} action={action}>
         <label className={styles.field}>
@@ -69,12 +70,11 @@ export default function LoginPage() {
           )}
         </label>
 
-        <button
+        <Button
           className={styles.button}
-          disabled={isPending}
         >
           {isPending ? "please wait..." : "login"}
-        </button>
+        </Button>
       </form>
     </>
   );
