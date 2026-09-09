@@ -1,7 +1,7 @@
 .updateUser {
   display: flex;
   flex-direction: column;
-  row-gap: var(--space-3);
+  row-gap: var(--space-4);
   max-width: 320px;
 }
 
