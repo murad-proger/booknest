@@ -1,0 +1,8 @@
+.link {
+  color: var(--color-text);
+}
+
+.link.active {
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}
