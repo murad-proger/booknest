@@ -30,7 +30,7 @@ export default async function BooksPage({
   ])
 
   return (
-    <div className={styles.bookPage}>
+    <main>
       <h1>
         BooksPage
       </h1>
@@ -46,6 +46,6 @@ export default async function BooksPage({
           ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

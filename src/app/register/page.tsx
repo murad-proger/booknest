@@ -13,7 +13,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <h1 className={styles.title}>Registration page</h1>
+      <h1>Registration page</h1>
 
       <form className={styles.form} action={action}>
         <label className={styles.field}>

@@ -1,7 +1,3 @@
-.cartPage {
-  margin-top: var(--space-5);
-}
-
 .cartTotal {
   display: flex;
   justify-content: flex-end;

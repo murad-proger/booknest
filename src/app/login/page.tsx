@@ -35,7 +35,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <h1 className={styles.title}>Login page</h1>
+      <h1>Login page</h1>
 
       <form className={styles.form} action={action}>
         <label className={styles.field}>

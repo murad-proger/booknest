@@ -68,7 +68,7 @@ export default function CartPage() {
   };
 
   return (
-    <main className="cartPage">
+    <main>
       <h1>Cart</h1>
 
       {isEmpty ? (

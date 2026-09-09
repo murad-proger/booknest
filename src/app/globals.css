@@ -77,6 +77,8 @@ h1, h2, h3 {
 
 h1 {
   margin-bottom: var(--space-6);
+  font-size: 32px;
+  font-weight: 600;
 }
 
 h2 {
@@ -88,6 +90,10 @@ h2 {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--space-5);
+}
+
+.pageContent {
+  margin: var(--space-5) auto;
 }
 
 section {

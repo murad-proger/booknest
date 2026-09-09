@@ -7,15 +7,6 @@
   box-shadow: 0 8px 30px var(--color-shadow);
 }
 
-.title {
-  margin: 0 0 var(--space-6);
-  color: var(--color-text);
-  text-align: center;
-  font-family: var(--font-content), Georgia, serif;
-  font-size: 28px;
-  font-weight: 600;
-}
-
 .field {
   position: relative;
   display: flex;
