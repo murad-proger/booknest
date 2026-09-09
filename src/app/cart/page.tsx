@@ -3,15 +3,19 @@
 import styles from "./cartPage.module.css";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useAppSelector } from "@/lib/hooks";
 
 import type { Book } from "@/types/book";
 import CartItemCard from "@/components/Cart/CartItemCard/CartItemCard";
+import Button from "@/components/ui/Button/Button";
+import LinkButton from "@/components/ui/LinkButton/LinkButton";
 
 export default function CartPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { data: session } = useSession();
   const cartItems = useAppSelector((state) => state.cart.items);
 
   useEffect(() => {
@@ -85,14 +89,20 @@ export default function CartPage() {
           <div className={styles.cartTotal}>
             <span>Total:</span>
             <strong>${total.toFixed(2)}</strong>
-            <button
-              style={{padding: '5px 20px', cursor: 'pointer'}}
-              type="button"
-              onClick={handleCheckout}
-              disabled={isLoading}
-            >
-              {isLoading ? "Processing..." : "Pay"}
-            </button>
+
+            {session?.user ? (
+              <Button
+                type="button"
+                onClick={handleCheckout}
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Pay"}
+              </Button>
+            ) : (
+              <LinkButton variant="secondary" href="/login">
+                Log in to pay
+              </LinkButton>
+            )}
           </div>
         </>
       )}
