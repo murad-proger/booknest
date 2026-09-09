@@ -1,6 +1,6 @@
 "use client"
 
-import styles from "./register.module.css"
+import styles from "@/styles/authForm.module.css";
 
 import { register, type RegisterState } from "@/actions/auth";
 import { useActionState } from "react";
