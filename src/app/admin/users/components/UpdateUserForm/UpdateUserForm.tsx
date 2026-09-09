@@ -3,7 +3,8 @@
 import styles from "./UpdateUserForm.module.css";
 
 import z from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import * as RadioGroup from "@radix-ui/react-radio-group"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateUserAction } from "@/actions/users";
 import { updateUserClientSchema } from "@/lib/validation";
@@ -24,6 +25,7 @@ export default function UpdateUserForm({ user }: Props) {
     register,
     handleSubmit,
     setError,
+    control,
     formState: {errors, isSubmitting}
   } = useForm<
     z.input<typeof updateUserClientSchema>,
@@ -101,24 +103,31 @@ export default function UpdateUserForm({ user }: Props) {
       </label>
       <fieldset>
         <span>role:</span>
-        <div className={styles.radioContainer}>
-          <label>
-            <input
-              type="radio"
-              value="USER"
-              {...register("role")}
-            />
-            User
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="ADMIN"
-              {...register("role")}
-            />
-            Admin
-          </label>
-        </div>
+        <Controller
+          name="role"
+          control={control}
+          render={({ field }) => (
+            <RadioGroup.Root
+              className={styles.radioContainer}
+              value={field.value}
+              onValueChange={field.onChange}
+              name={field.name}
+            >
+              <label className={styles.radioItem}>
+                <RadioGroup.Item className={styles.radio} value="USER">
+                  <RadioGroup.Indicator className={styles.radioIndicator} />
+                </RadioGroup.Item>
+                User
+              </label>
+              <label className={styles.radioItem}>
+                <RadioGroup.Item className={styles.radio} value="ADMIN">
+                  <RadioGroup.Indicator className={styles.radioIndicator} />
+                </RadioGroup.Item>
+                Admin
+              </label>
+            </RadioGroup.Root>
+          )}
+        />
         {
           errors?.role && (
             <p className="fieldError">{errors.role.message}</p>

@@ -33,16 +33,40 @@
   margin-top: var(--space-1);
 }
 
-.radioContainer label {
+.radioItem {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--space-2);
   font-size: 14px;
   font-weight: normal;
+  cursor: pointer;
 }
 
-.radioContainer input[type="radio"] {
-  width: auto;
-  margin: 0;
+.radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-disabled);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.radio[data-state="checked"] {
+  border-color: var(--color-accent);
+}
+
+.radio:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.radioIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
 }
