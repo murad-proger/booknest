@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 
-import styles from "./HeaderAuth.module.css";
 import LogoutButton from "@/components/LogoutButton/LogoutButton";
+import LinkButton from "@/components/ui/LinkButton/LinkButton";
 
 export default function HeaderAuth() {
   const { data: session } = useSession();
@@ -20,13 +19,13 @@ export default function HeaderAuth() {
 
   return (
     <>
-      <Link href="/login" className={styles.login}>
+      <LinkButton variant="secondary" href="/login">
         Login
-      </Link>
+      </LinkButton>
 
-      <Link href="/register" className={styles.register}>
+      <LinkButton variant="primary" href="/register">
         Register
-      </Link>
+      </LinkButton>
     </>
   );
 }

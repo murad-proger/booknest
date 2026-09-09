@@ -1,11 +1,10 @@
 "use client";
 
-import styles from "./LogoutButton.module.css";
-
 import { signOut } from "next-auth/react";
 
 import { clearCart } from "@/lib/features/cart/cartSlice";
 import { useAppDispatch } from "@/lib/hooks";
+import Button from "../ui/Button/Button";
 
 export default function LogoutButton() {
   const dispatch = useAppDispatch();
@@ -22,11 +21,8 @@ export default function LogoutButton() {
   };
 
   return (
-    <button
-      className={styles.logout}
-      onClick={handleLogout}
-    >
+    <Button variant="secondary" onClick={handleLogout}>
       Logout
-    </button>
+    </Button>
   );
 }
