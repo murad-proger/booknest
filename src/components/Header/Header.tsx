@@ -20,6 +20,9 @@ export default function Header() {
             {session?.data?.user.role === "ADMIN" && (
               <Link href={"/admin"}>Admin</Link>
             )}
+            {session?.data?.user.role === "USER" && (
+              <Link href={"/orders"}>Orders</Link>
+            )}
           </nav>
           <div className={styles.leftPanel}>
             <HeaderCart />
