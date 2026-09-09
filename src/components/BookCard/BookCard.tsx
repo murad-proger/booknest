@@ -20,8 +20,8 @@ export default function BookCard({ book }: Props) {
         className={styles.image}
         src={book.images ? book.images[0].url : "/images/no-book-cover.jpg"}
         alt={`${book.author} - ${book.title}`}
-        width={140}
-        height={200}
+        width={250}
+        height={290}
       />
 
       <div className={styles.content}>
