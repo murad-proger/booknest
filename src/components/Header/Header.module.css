@@ -1,10 +1,13 @@
 .header {
+  border-bottom: 1px solid var(--color-disabled);
+  padding: var(--space-3) 0;
+}
+
+.headerInner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-5);
-  border-bottom: 1px solid var(--color-disabled);
-  padding: var(--space-5) 0;
 }
 
 .nav {

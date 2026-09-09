@@ -32,7 +32,9 @@ export default function RootLayout({
         <SessionProvider>
           <StoreProvider>
             <Header />
-            {children}
+            <div className="container">
+              {children}
+            </div>
           </StoreProvider>
         </SessionProvider>
       </body>
