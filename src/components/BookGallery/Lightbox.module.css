@@ -1,0 +1,87 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 85%);
+  z-index: 100;
+}
+
+.content {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.imageWrapper {
+  position: relative;
+  width: min(90vw, 1000px);
+  height: min(85vh, 1000px);
+}
+
+.image {
+  object-fit: contain;
+}
+
+.closeButton {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.closeButton:hover {
+  background: rgb(255 255 255 / 20%);
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.navButton:hover {
+  background: rgb(255 255 255 / 20%);
+}
+
+.navPrev { left: var(--space-5); }
+.navNext { right: var(--space-5); }
+
+.counter {
+  position: absolute;
+  bottom: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 14px;
+  background: rgb(0 0 0 / 40%);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-control);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
