@@ -168,6 +168,18 @@ export async function updateBook(
   });
 }
 
+export async function getLatestBooks(limit = 4) {
+  return prisma.book.findMany({
+    orderBy: {
+      id: "desc",
+    },
+    take: limit,
+    include: {
+      images: true,
+    },
+  });
+}
+
 export async function getBookById(id: number) {
   return prisma.book.findUnique({
     where: {
