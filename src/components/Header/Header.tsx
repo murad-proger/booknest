@@ -2,12 +2,12 @@
 
 import styles from "./Header.module.css";
 
-import Link from "next/link";
 import HeaderCart from "../Cart/HeaderCart/HeaderCart";
 import HeaderAuth from "./HeaderAuth/HeaderAuth";
 import MobileNav from "./MobileNav/MobileNav";
 import { useSession } from "next-auth/react";
 import NavLink from "./NavLink/NavLink";
+import Logo from "./Logo/Logo";
 
 export default function Header() {
   const session = useSession();
@@ -16,7 +16,7 @@ export default function Header() {
     <header className={styles.header}>
       <div className="container">
         <div className={styles.headerInner}>
-          <Link href={"/"}>Booknest</Link>
+          <Logo />
 
           <nav className={styles.nav}>
             <NavLink href={"/"}>Main</NavLink>
