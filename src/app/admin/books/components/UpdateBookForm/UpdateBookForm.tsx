@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import  { updateBookAction } from "@/actions/books"
 import { updateBookClientSchema, type UpdateBookFormData } from "@/lib/validation"
 import Button from "@/components/ui/Button/Button"
+import ImageDropzone from "@/components/ui/ImageDropzone/ImageDropzone"
 
 type Book = UpdateBookFormData & {
   images: { id: number; url: string; }[];
@@ -24,9 +25,8 @@ type Props = {
 
 export default function UpdateBookForm ({book}: Props) {
   const {title, author, price, images, id} = book
-
   const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
-
+  const [newImages, setNewImages] = useState<File[]>([]);
   const [newImagesError, setNewImagesError] = useState<string | null>(null);
 
   const {
@@ -143,11 +143,10 @@ export default function UpdateBookForm ({book}: Props) {
           ))}
         </div>
 
-        <input
-          type="file"
+        <ImageDropzone
+          files={newImages}
+          onChange={setNewImages}
           name="newImages"
-          accept="image/*"
-          multiple
         />
         {newImagesError  && (
             <p className="fieldError">{newImagesError }</p>

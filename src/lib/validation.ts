@@ -5,7 +5,7 @@ import { Role } from "@/generated/prisma/enums";
 export const bookFields = {
   title: z.string().trim().min(1, "Title is required"),
   author: z.string().trim().min(1, "Author is required"),
-  price: z.coerce.number().min(1, "Price must be greater than 0"),
+  price: z.coerce.number().min(1, "Price must be minimum 1$"),
 };
 
 const fileSchema = z

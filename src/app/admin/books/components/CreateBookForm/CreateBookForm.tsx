@@ -8,6 +8,7 @@ import { bookSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import Button from "@/components/ui/Button/Button";
+import ImageDropzone from "@/components/ui/ImageDropzone/ImageDropzone";
 
 type FormValues = z.output<typeof bookSchema>
 
@@ -103,15 +104,9 @@ export default function CreateBookForm() {
           control={control}
           render={({field}) => (
             <>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(event) =>{
-                  field.onChange(
-                    Array.from(event.target.files ?? [])
-                  );
-                }}
+              <ImageDropzone
+                files={field.value ?? []}
+                onChange={field.onChange}
               />
               {errors.images && (
                 <p className="fieldError">{errors.images.message}</p>
