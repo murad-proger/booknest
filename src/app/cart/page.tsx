@@ -10,6 +10,7 @@ import type { Book } from "@/types/book";
 import CartItemCard from "@/components/Cart/CartItemCard/CartItemCard";
 import Button from "@/components/ui/Button/Button";
 import LinkButton from "@/components/ui/LinkButton/LinkButton";
+import EmptyCart from "@/components/Cart/EmptyCart/EmptyCart";
 
 export default function CartPage() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -76,7 +77,7 @@ export default function CartPage() {
       <h1>Cart</h1>
 
       {isEmpty ? (
-        <p>Cart is empty</p>
+        <EmptyCart />
       ) : (
         <>
           {books.map((book) => (
