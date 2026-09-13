@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${robotoFlex.variable} ${inter.variable}`}>
+    <html lang="en" className={`${robotoFlex.variable} ${inter.variable}`} suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
         <SessionProvider>

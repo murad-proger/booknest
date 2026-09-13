@@ -6,8 +6,9 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isAdminRoute = pathname.startsWith("/admin");
+  const isOrdersRoute = pathname.startsWith("/orders");
 
-  if (!isAdminRoute) {
+  if (!isAdminRoute && !isOrdersRoute) {
     return;
   }
 
@@ -19,7 +20,7 @@ export default auth((req) => {
     return Response.redirect(loginUrl);
   }
 
-  if (session.user.role !== "ADMIN") {
+  if (isAdminRoute && session.user.role !== "ADMIN") {
     return Response.redirect(new URL("/", req.nextUrl));
   }
 
@@ -27,5 +28,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/orders/:path*"],
 };
