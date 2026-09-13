@@ -8,4 +8,5 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-5);
+  flex: 1;
 }

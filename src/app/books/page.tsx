@@ -4,6 +4,7 @@ import styles from "./booksPage.module.css";
 import { getAuthors, getBooks, type GetBooksOptions } from "@/services/books";
 import Filters from "@/components/Filters/Filters";
 import BookCard from "@/components/BookCard/BookCard";
+import NoBooksFound from "./components/NoBooksFound/NoBooksFound";
 
 export default async function BooksPage({
   searchParams,
@@ -32,18 +33,22 @@ export default async function BooksPage({
   return (
     <main>
       <h1>
-        BooksPage
+        Books
       </h1>
       <SearchInput />
       <div className={styles.content}>
         <Filters authors={authorsList} />
         <div className={styles.booksSection}>
-          {books.map((book) => (
+          {books.length === 0 ? (
+            <NoBooksFound />
+          ) : (
+            books.map((book) => (
               <BookCard
                 key={book.id}
                 book={book}
               />
-          ))}
+            ))
+          )}
         </div>
       </div>
     </main>

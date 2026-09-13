@@ -3,6 +3,7 @@ import styles from "./ordersPage.module.css"
 import { getOrdersForUser } from "@/services/orders";
 import RetryPaymentButton from "@/components/Orders/RetryPaymentButton/RetryPaymentButton";
 import OrderCard from "@/components/ui/Card/OrderCard";
+import EmptyOrders from "@/components/Orders/EmptyOrders/EmptyOrders";
 
 export default async function OrdersPage() {
   const orders = await getOrdersForUser();
@@ -12,7 +13,7 @@ export default async function OrdersPage() {
       <h1>My orders</h1>
 
       {orders.length === 0 ? (
-        <p>No orders yet</p>
+        <EmptyOrders />
       ) : (
         <div className={styles.list}>
           {
