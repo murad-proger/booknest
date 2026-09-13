@@ -2,6 +2,7 @@
 
 import styles from "./SortFilter.module.css"
 
+import { useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import * as Select from "@radix-ui/react-select"
 
@@ -16,9 +17,17 @@ export default function SortFilter() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const defaultSort = searchParams.get("sort") ?? ""
+  const [syncedUrl, setSyncedUrl] = useState(searchParams.toString())
+  const [sort, setSort] = useState(() => searchParams.get("sort") ?? "")
+
+  if (searchParams.toString() !== syncedUrl) {
+    setSyncedUrl(searchParams.toString())
+    setSort(searchParams.get("sort") ?? "")
+  }
 
   const onSortChange = (value: string) => {
+    setSort(value)
+
     const params = new URLSearchParams(searchParams)
 
     if (value) {
@@ -33,7 +42,7 @@ export default function SortFilter() {
   return (
     <label className={styles.filtersSelect}>
       <span>Sort by:</span>
-      <Select.Root name="sort" defaultValue={defaultSort} onValueChange={onSortChange}>
+      <Select.Root name="sort" value={sort} onValueChange={onSortChange}>
         <Select.Trigger className={styles.trigger} aria-label="Sort by">
           <Select.Value placeholder="Default" />
           <Select.Icon className={styles.icon}>

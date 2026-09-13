@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import * as Checkbox from "@radix-ui/react-checkbox"
 
@@ -9,7 +10,15 @@ export default function AuthorFilter({ authors }: { authors: string[] }) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const selectedAuthors = searchParams.getAll("authors")
+  const [syncedUrl, setSyncedUrl] = useState(searchParams.toString())
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>(() =>
+    searchParams.getAll("authors")
+  )
+
+  if (searchParams.toString() !== syncedUrl) {
+    setSyncedUrl(searchParams.toString())
+    setSelectedAuthors(searchParams.getAll("authors"))
+  }
 
   const onAuthorChange = (author: string, checked: boolean) => {
     const params = new URLSearchParams(searchParams)
@@ -28,6 +37,7 @@ export default function AuthorFilter({ authors }: { authors: string[] }) {
       params.append("authors", a)
     })
 
+    setSelectedAuthors(updatedAuthors)
     router.replace(`/books?${params.toString()}`)
   }
 
@@ -41,7 +51,7 @@ export default function AuthorFilter({ authors }: { authors: string[] }) {
             className={styles.checkbox}
             name="authors"
             value={author}
-            defaultChecked={selectedAuthors.includes(author)}
+            checked={selectedAuthors.includes(author)}
             onCheckedChange={(checked) => onAuthorChange(author, checked === true)}
           >
             <Checkbox.Indicator className={styles.indicator}>

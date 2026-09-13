@@ -2,7 +2,7 @@
 
 import styles from "./PriceFilter.module.css"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 
 export default function PriceFilter () {
@@ -11,24 +11,37 @@ export default function PriceFilter () {
 
   const timeout = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  const defaultPriceMin = searchParams.get("priceMin") ?? ""
-  const defaultPriceMax = searchParams.get("priceMax") ?? "";
+  const [syncedUrl, setSyncedUrl] = useState(searchParams.toString())
+  const [priceMin, setPriceMin] = useState(() => searchParams.get("priceMin") ?? "")
+  const [priceMax, setPriceMax] = useState(() => searchParams.get("priceMax") ?? "")
+
+  if (searchParams.toString() !== syncedUrl) {
+    setSyncedUrl(searchParams.toString())
+    setPriceMin(searchParams.get("priceMin") ?? "")
+    setPriceMax(searchParams.get("priceMax") ?? "")
+  }
 
   const onPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if(timeout.current) clearTimeout(timeout.current)
-    
+
     const { name, value } = e.target
-    
+
+    if (name === "priceMin") {
+      setPriceMin(value)
+    } else {
+      setPriceMax(value)
+    }
+
     timeout.current = setTimeout(() => {
       const params = new URLSearchParams(searchParams)
-      
+
       if(Number(value) > 0) {
         params.set(name, value)
       } else {
         params.delete(name)
       }
 
-      router.replace(`/books?${params.toString()}`)      
+      router.replace(`/books?${params.toString()}`)
       }, 400);
   }
 
@@ -41,7 +54,7 @@ export default function PriceFilter () {
             type="number"
             name="priceMin"
             placeholder="min"
-            defaultValue={defaultPriceMin}
+            value={priceMin}
             onChange={onPriceChange}
           />
         </div>
@@ -50,7 +63,7 @@ export default function PriceFilter () {
             type="number"
             name="priceMax"
             placeholder="max"
-            defaultValue={defaultPriceMax}
+            value={priceMax}
             onChange={onPriceChange}
           />
         </div>
