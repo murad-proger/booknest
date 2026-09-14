@@ -28,3 +28,17 @@
   color: var(--color-text);
   margin-top: var(--space-3);
 }
+
+@media (max-width: 500px) {
+  .cartItem {
+    position: relative;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cartItem > button {
+    position: absolute;
+    top: 20px;
+    right: 0;
+  }
+}
