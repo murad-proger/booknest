@@ -6,6 +6,12 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { clearCartByUserId } from "@/services/cart";
 
+function devLog(message: string, data?: Record<string, unknown>) {
+  if (process.env.NODE_ENV !== "production") {
+    console.log(message, data);
+  }
+}
+
 export async function POST(request: Request) {
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
@@ -112,7 +118,7 @@ export async function POST(request: Request) {
 
         await clearCartByUserId(order.userId, tx);
 
-        console.log("Payment, Order and Cart updated:", {
+        devLog("Payment, Order and Cart updated:", {
           orderId,
           paymentIntentId,
           userId: order.userId,
@@ -151,12 +157,12 @@ export async function POST(request: Request) {
         });
 
         if (paymentResult.count === 0) {
-          console.log("Payment was not marked FAILED (status changed):", {
+          devLog("Payment was not marked FAILED (status changed):", {
             paymentId: payment.id,
           });
         }
 
-        console.log("Payment marked FAILED:", {
+        devLog("Payment marked FAILED:", {
           orderId,
           paymentIntentId: paymentIntent.id,
         });
@@ -190,7 +196,7 @@ export async function POST(request: Request) {
           });
 
           if (paymentResult.count === 0) {
-            console.log("Payment was not marked FAILED (status changed):", {
+            devLog("Payment was not marked FAILED (status changed):", {
               paymentId: payment.id,
             });
           }
@@ -207,9 +213,9 @@ export async function POST(request: Request) {
         });
 
         if (result.count === 0) {
-          console.log("Order was not cancelled:", { orderId });
+          devLog("Order was not cancelled:", { orderId });
         } else {
-          console.log("Order cancelled after session expiry:", { orderId });
+          devLog("Order cancelled after session expiry:", { orderId });
         }
       }
 
@@ -265,7 +271,7 @@ export async function POST(request: Request) {
           );
         }
 
-        console.log("Payment and Order marked REFUNDED:", {
+        devLog("Payment and Order marked REFUNDED:", {
           orderId: payment.orderId,
           paymentIntentId,
         });
@@ -277,14 +283,14 @@ export async function POST(request: Request) {
         event.type !== "checkout.session.expired" &&
         event.type !== "charge.refunded"
       ) {
-        console.log("Unhandled Stripe event type:", event.type);
+        devLog("Unhandled Stripe event type:", { type: event.type });
       }
 
       return true;
     });
 
     if (!processed) {
-      console.log("Duplicate webhook event ignored:", event.id);
+      devLog("Duplicate webhook event ignored:", { eventId: event.id });
     }
 
     return NextResponse.json({ received: true });
