@@ -1,39 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BookNest
 
-## Getting Started
+Книжный интернет-магазин с полноценным циклом покупки — от каталога до оплаты — сделанный в production-like стиле как pet-проект для отработки fullstack-разработки на реальном денежном флоу (Stripe), а не на упрощённой демо-логике.
 
-First, run the development server:
+## Стек
+
+- **Frontend:** Next.js (App Router), React, TypeScript, TanStack Query, React Hook Form, Zod
+- **Backend:** Next.js API routes и Server Actions, PostgreSQL, Prisma ORM
+- **Auth:** Auth.js (JWT-based аутентификация, роли user/admin)
+- **Платежи:** Stripe (Checkout, webhooks, идемпотентность, retry, refund)
+- **UI:** Tailwind CSS, кастомная библиотека компонентов (Button, Card, Badge и др.), Radix UI-примитивы (select, checkbox, dialog, radio-group), светлая/тёмная тема
+- **Тесты:** Vitest, React Testing Library
+
+## Возможности
+
+- Каталог книг с фильтрацией и поиском
+- Корзина и оформление заказа
+- Оплата через Stripe Checkout с полным webhook-флоу (успех, отказ карты, истечение сессии)
+- Повторная оплата (retry) для неуспешных заказов
+- Возврат средств (refund) — инициируется админом, источник истины — Stripe webhook, а не прямое изменение БД
+- Идемпотентная обработка webhook-событий (защита от дублей)
+- Защита от race conditions при параллельных/повторных webhook-событиях
+- Админ-панель: управление книгами, пользователями, заказами
+- Разграничение доступа по ролям (user/admin) на уровне middleware
+- Юнит- и компонентные тесты ключевых частей приложения
+
+## Скриншоты
+
+### Витрина
+
+Главная страница — светлая и тёмная тема:
+
+<p align="center">
+  <img src="docs/screenshots/01-home-light.jpg" width="49%" />
+  <img src="docs/screenshots/02-home-dark.jpg" width="49%" />
+</p>
+
+Каталог с поиском и фильтрами по автору/цене:
+
+![Каталог книг](docs/screenshots/03-catalog.jpg)
+
+### Оформление заказа
+
+Корзина:
+
+![Корзина](docs/screenshots/04-cart.jpg)
+
+Оплата через Stripe Checkout:
+
+![Stripe Checkout](docs/screenshots/05-checkout.jpg)
+
+Успешная оплата:
+
+![Успешная оплата](docs/screenshots/06-payment-success.jpg)
+
+### Админ-панель
+
+Главная страница админки:
+
+![Admin page](docs/screenshots/07-admin-page.jpg)
+
+Управление книгами:
+
+![Admin books](docs/screenshots/08-admin-books.jpg)
+
+Управление заказами — статусы PENDING / PAID / CANCELLED / REFUNDED, возврат средств прямо из списка:
+
+![Admin orders](docs/screenshots/09-admin-orders.jpg)
+
+## Запуск локально
+
+```bash
+git clone https://github.com/murad-proger/booknest.git
+cd booknest
+npm install
+```
+
+Создать `.env` со следующими переменными:
+
+```
+DATABASE_URL=
+AUTH_SECRET=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+```
+
+Применить миграции Prisma:
+
+```bash
+npx prisma migrate dev
+```
+
+Запустить dev-сервер:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Открыть [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Тестирование
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run test
+```
 
 ## Stripe: локальный webhook
 
