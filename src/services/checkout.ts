@@ -23,8 +23,8 @@ export async function createCheckoutSession() {
       metadata: { orderId: order.id.toString() },
     },
     line_items: buildLineItems(order.items),
-    success_url: "http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}",
-    cancel_url: "http://localhost:3000/checkout/cancel",
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
   });
 
   await prisma.payment.update({
@@ -93,8 +93,8 @@ export async function createRetryCheckoutSession(orderId: number, userId: number
       metadata: { orderId: order.id.toString() },
     },
     line_items: buildLineItems(order.items),
-    success_url: "http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}",
-    cancel_url: "http://localhost:3000/checkout/cancel",
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
   });
 
   await prisma.payment.update({
