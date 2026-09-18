@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getBooks } from "@/services/books";
 
 import LinkButton from "@/components/ui/LinkButton/LinkButton";
