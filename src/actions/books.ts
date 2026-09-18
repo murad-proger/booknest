@@ -4,9 +4,8 @@ import { createBook, updateBook, deleteBook } from "@/services/books";
 import { bookSchema, updateBookServerSchema, bookIdSchema } from "@/lib/validation";
 import { z } from "zod";
 
-import { writeFile } from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -75,20 +74,24 @@ export async function createBookAction(
 
   for (const image of result.data.images) {
     const buffer = Buffer.from(await image.arrayBuffer());
-    // Buffer — это объект Node.js для хранения и передачи бинарных данных (байтов). Т.е. это "контейнер с содержимым файла", который Node.js умеет записывать на диск.
-    // arrayBuffer - "Возьми этот файл и дай мне его содержимое в виде набора байтов".
-
     const fileName = `${randomUUID()}-${image.name}`;
 
-    const uploadPath = path.join(
-      process.cwd(), // Current Working Directory
-      "public/uploads/books",
-      fileName
-    );
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("book-covers")
+      .upload(fileName, buffer, { contentType: image.type });
 
-    await writeFile(uploadPath, buffer); //writeFile(путь, данные)
+    if (uploadError) {
+      return {
+        success: false,
+        errors: { form: "Failed to upload image" },
+      };
+    }
 
-    imagePaths.push(`/uploads/books/${fileName}`);
+    const { data: urlData } = supabaseAdmin.storage
+      .from("book-covers")
+      .getPublicUrl(fileName);
+
+    imagePaths.push(urlData.publicUrl);
   }
 
   try {
@@ -172,18 +175,24 @@ export async function updateBookAction(
 
   for (const image of validatedNewImages ?? []) {
     const buffer = Buffer.from(await image.arrayBuffer());
-
     const fileName = `${randomUUID()}-${image.name}`;
 
-    const uploadPath = path.join(
-      process.cwd(),
-      "public/uploads/books",
-      fileName
-    );
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("book-covers")
+      .upload(fileName, buffer, { contentType: image.type });
 
-    await writeFile(uploadPath, buffer);
+    if (uploadError) {
+      return {
+        success: false,
+        errors: { form: "Failed to upload image" },
+      };
+    }
 
-    uploadedPaths.push(`/uploads/books/${fileName}`);
+    const { data: urlData } = supabaseAdmin.storage
+      .from("book-covers")
+      .getPublicUrl(fileName);
+
+    uploadedPaths.push(urlData.publicUrl);
   }
 
   try {
