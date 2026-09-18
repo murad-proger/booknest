@@ -7,6 +7,8 @@ import ThemeProvider from "@/providers/ThemeProvider";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/Header/Header";
 
+export const dynamic = "force-dynamic";
+
 const robotoFlex = Roboto_Flex({
   variable: "--font-content",
   subsets: ["latin", "cyrillic"],
