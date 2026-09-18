@@ -2,6 +2,18 @@
 
 Книжный интернет-магазин с полноценным циклом покупки — от каталога до оплаты — сделанный в production-like стиле как pet-проект для отработки fullstack-разработки на реальном денежном флоу (Stripe), а не на упрощённой демо-логике.
 
+## Демо
+
+🔗 **Live:** https://murad-booknest.vercel.app
+
+| | |
+|---|---|
+| Тестовый пользователь | `user@gmail.com` / `123456` |
+| Успешная оплата | `4242 4242 4242 4242` |
+| Отказ карты | `4000 0000 0000 0002` |
+
+Срок карты — любой будущий, CVC — любой. Stripe работает в тестовом режиме, реальные деньги не списываются. Админ-панель на проде не открыта публично — управление книгами, пользователями и refund доступны только с ролью admin, доступ к тестовому admin-аккаунту предоставляется по запросу. Как выглядит админка — см. раздел «Скриншоты» ниже.
+
 ## Стек
 
 - **Frontend:** Next.js (App Router), React, TypeScript, TanStack Query, React Hook Form, Zod
@@ -9,6 +21,7 @@
 - **Auth:** Auth.js (JWT-based аутентификация, роли user/admin)
 - **Платежи:** Stripe (Checkout, webhooks, идемпотентность, retry, refund)
 - **UI:** Tailwind CSS, кастомная библиотека компонентов (Button, Card, Badge и др.), Radix UI-примитивы (select, checkbox, dialog, radio-group), светлая/тёмная тема
+- **Инфраструктура:** Supabase (PostgreSQL + Storage), деплой на Vercel, CI на GitHub Actions (install → lint → build → test на каждый push/PR в main)
 - **Тесты:** Vitest, React Testing Library
 
 ## Возможности
@@ -82,7 +95,13 @@ DATABASE_URL=
 AUTH_SECRET=
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
+NEXT_PUBLIC_APP_URL=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 ```
+
+Проект использует Supabase для базы данных и для хранения обложек книг — понадобится Storage-бакет `book-covers` (public) в вашем Supabase-проекте.
 
 Применить миграции Prisma:
 
