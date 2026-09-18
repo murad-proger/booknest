@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getBookById } from "@/services/books";
 import UpdateBookForm from "../../components/UpdateBookForm/UpdateBookForm"
 

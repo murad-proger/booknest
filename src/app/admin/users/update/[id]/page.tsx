@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getUserById } from "@/services/users";
 import UpdateUserForm from "../../components/UpdateUserForm/UpdateUserForm";
 

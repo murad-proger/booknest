@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getAllOrders } from "@/services/orders";
 import RefundButton from "./components/RefundButton/RefundButton";
 import OrderCard from "@/components/ui/Card/OrderCard";
