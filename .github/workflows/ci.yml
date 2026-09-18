@@ -26,5 +26,7 @@ jobs:
       - run: npm run build
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
 
       - run: npx vitest run
