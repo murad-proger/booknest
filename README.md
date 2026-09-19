@@ -21,7 +21,7 @@
 - **Auth:** Auth.js (JWT-based аутентификация, роли user/admin)
 - **Платежи:** Stripe (Checkout, webhooks, идемпотентность, retry, refund)
 - **UI:** Tailwind CSS, кастомная библиотека компонентов (Button, Card, Badge и др.), Radix UI-примитивы (select, checkbox, dialog, radio-group), светлая/тёмная тема
-- **Инфраструктура:** Supabase (PostgreSQL + Storage), деплой на Vercel, CI на GitHub Actions (install → lint → build → test на каждый push/PR в main)
+- **Инфраструктура:** Supabase (PostgreSQL + Storage); полноценный CI/CD — CI на GitHub Actions (install → lint → build → test на каждый push/PR в main), CD — автодеплой на Vercel по push в `main` через встроенную интеграцию с GitHub. Production-релиз защищён Vercel Deployment Checks: пока job `test` не позеленеет, билд не промоутится на продовый домен — деплой с падающими тестами не долетает до пользователей
 - **Тесты:** Vitest, React Testing Library
 
 ## Возможности
