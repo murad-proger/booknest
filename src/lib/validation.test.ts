@@ -5,7 +5,7 @@ describe("bookSchema", () => {
   it("проходит валидацию с корректными данными", () => {
     const valid = { title: "Дюна", author: "Фрэнк Герберт", price: 15 };
 
-    expect(() => bookSchema.parse(valid)).toThrow();
+    expect(() => bookSchema.parse(valid)).not.toThrow();
   });
 
   it("не проходит валидацию с пустым title", () => {
