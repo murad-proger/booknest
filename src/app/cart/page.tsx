@@ -2,8 +2,9 @@
 
 import styles from "./cartPage.module.css";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 import { useAppSelector } from "@/lib/hooks";
 
 import type { Book } from "@/types/book";
@@ -12,36 +13,31 @@ import Button from "@/components/ui/Button/Button";
 import LinkButton from "@/components/ui/LinkButton/LinkButton";
 import EmptyCart from "@/components/Cart/EmptyCart/EmptyCart";
 
+async function fetchBooks(): Promise<Book[]> {
+  const response = await fetch("/api/books");
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch books");
+  }
+
+  return response.json();
+}
+
 export default function CartPage() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   const { data: session } = useSession();
   const cartItems = useAppSelector((state) => state.cart.items);
 
-  useEffect(() => {
-    const getBooks = async () => {
-      if (cartItems.length === 0) {
-        return;
-      }
+  const { data: allBooks = [], isPending } = useQuery({
+    queryKey: ["books"],
+    queryFn: fetchBooks,
+    enabled: cartItems.length > 0,
+  });
 
-      const response = await fetch("/api/books");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch books");
-      }
-
-      const data: Book[] = await response.json();
-
-      const cartBooks = data.filter((book) =>
-        cartItems.some((item) => item.id === book.id)
-      );
-
-      setBooks(cartBooks);
-    };
-
-    getBooks();
-  }, [cartItems]);
+  const books = allBooks.filter((book) =>
+    cartItems.some((item) => item.id === book.id)
+  );
 
   const total = books.reduce((sum, book) => {
     const cartItem = cartItems.find((item) => item.id === book.id);
@@ -53,7 +49,7 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     try {
-      setIsLoading(true);
+      setIsCheckoutLoading(true);
 
       const response = await fetch("/api/checkout", {
         method: "POST",
@@ -68,7 +64,7 @@ export default function CartPage() {
       window.location.href = data.session.url;
     } catch (error) {
       console.error("Checkout error:", error);
-      setIsLoading(false);
+      setIsCheckoutLoading(false);
     }
   };
 
@@ -78,13 +74,12 @@ export default function CartPage() {
 
       {isEmpty ? (
         <EmptyCart />
+      ) : isPending ? (
+        <p>Loading...</p>
       ) : (
         <>
           {books.map((book) => (
-            <CartItemCard
-              key={book.id}
-              book={book}
-            />
+            <CartItemCard key={book.id} book={book} />
           ))}
 
           <div className={styles.cartTotal}>
@@ -95,9 +90,9 @@ export default function CartPage() {
               <Button
                 type="button"
                 onClick={handleCheckout}
-                disabled={isLoading}
+                disabled={isCheckoutLoading}
               >
-                {isLoading ? "Processing..." : "Pay"}
+                {isCheckoutLoading ? "Processing..." : "Pay"}
               </Button>
             ) : (
               <LinkButton variant="secondary" href="/login">

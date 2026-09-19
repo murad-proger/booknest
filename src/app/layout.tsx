@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Roboto_Flex, Inter } from "next/font/google";
 import StoreProvider from "@/providers/StoreProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
+import QueryProvider from "@/providers/QueryProvider";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/Header/Header";
 
@@ -47,12 +48,14 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
         <SessionProvider>
           <ThemeProvider>
-            <StoreProvider>
-              <Header />
-              <div className="container pageContent">
-                {children}
-              </div>
-            </StoreProvider>
+            <QueryProvider>
+              <StoreProvider>
+                <Header />
+                <div className="container pageContent">
+                  {children}
+                </div>
+              </StoreProvider>
+            </QueryProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>
